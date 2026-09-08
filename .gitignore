@@ -39,3 +39,8 @@ yarn-error.log*
 
 # TypeScript build info
 *.tsbuildinfo
+
+# Python
+backend/.venv/
+backend/.env
+backend/evallens.db
