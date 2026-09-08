@@ -9,5 +9,6 @@ export const routes = {
   datasets: '/datasets',
   logs: '/logs',
   models: '/models',
+  settings: '/settings',
   promptIde: '/prompt-ide',
 } as const

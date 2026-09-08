@@ -23,7 +23,7 @@ const navItems: NavItem[] = [
   { label: 'PROMPT_IDE', icon: 'code', to: routes.promptIde },
   { label: 'DATASETS', icon: 'database', to: routes.datasets },
   { label: 'MODELS', icon: 'psychology', to: routes.models },
-  { label: 'SETTINGS', icon: 'settings' },
+  { label: 'SETTINGS', icon: 'settings', to: routes.settings },
 ]
 
 /**
