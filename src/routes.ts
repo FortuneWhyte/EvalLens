@@ -10,5 +10,6 @@ export const routes = {
   logs: '/logs',
   models: '/models',
   settings: '/settings',
+  terminal: '/terminal',
   promptIde: '/prompt-ide',
 } as const

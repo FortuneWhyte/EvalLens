@@ -5,6 +5,7 @@ import Evals from './pages/Evals/Evals'
 import Logs from './pages/Logs/Logs'
 import Models from './pages/Models/Models'
 import Settings from './pages/Settings/Settings'
+import Terminal from './pages/Terminal/Terminal'
 import PromptIde from './pages/PromptIde/PromptIde'
 import { routes } from './routes'
 
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
   { path: routes.logs, element: <Logs /> },
   { path: routes.models, element: <Models /> },
   { path: routes.settings, element: <Settings /> },
+  { path: routes.terminal, element: <Terminal /> },
   { path: routes.promptIde, element: <PromptIde /> },
   { path: '*', element: <Navigate replace to={routes.dashboard} /> },
 ])

@@ -19,7 +19,7 @@ interface NavItem {
  */
 const navItems: NavItem[] = [
   { label: 'DASHBOARD', icon: 'dashboard', to: routes.dashboard },
-  { label: 'TERMINAL', icon: 'terminal' },
+  { label: 'TERMINAL', icon: 'terminal', to: routes.terminal },
   { label: 'PROMPT_IDE', icon: 'code', to: routes.promptIde },
   { label: 'DATASETS', icon: 'database', to: routes.datasets },
   { label: 'MODELS', icon: 'psychology', to: routes.models },
