@@ -5,6 +5,7 @@
  */
 export const routes = {
   dashboard: '/',
+  evals: '/evals',
   datasets: '/datasets',
   promptIde: '/prompt-ide',
 } as const

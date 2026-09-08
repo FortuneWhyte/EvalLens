@@ -1,7 +1,67 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { routes } from '../../routes'
 
 type TopNavVariant = 'dashboard' | 'explorer' | 'ide'
+
+interface TopNavItem {
+  label: string
+  /** absent for sections with no screen yet — those stay inert anchors */
+  to?: string
+}
+
+const topNavItems: TopNavItem[] = [
+  { label: 'DASHBOARD', to: routes.dashboard },
+  { label: 'EVALS', to: routes.evals },
+  { label: 'LOGS' },
+  { label: 'DOCS' },
+]
+
+/**
+ * Per-variant link styling. The mockups differ slightly: the Dashboard's links
+ * carry the font size utility twice, and the Prompt IDE's are uppercased and
+ * scale on the active item.
+ */
+const linkStyles: Record<TopNavVariant, { active: string; inactive: string }> = {
+  dashboard: {
+    active:
+      'text-primary-fixed-dim border-b-2 border-primary-fixed-dim pb-1 font-label-caps text-label-caps',
+    inactive:
+      'text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all font-label-caps text-label-caps',
+  },
+  explorer: {
+    active: 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim pb-1 font-label-caps',
+    inactive:
+      'text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all',
+  },
+  ide: {
+    active:
+      'text-primary-fixed-dim border-b-2 border-primary-fixed-dim pb-1 opacity-80 scale-95 transition-transform uppercase',
+    inactive:
+      'text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all uppercase',
+  },
+}
+
+function TopNavLinks({ variant }: { variant: TopNavVariant }) {
+  const { pathname } = useLocation()
+  const styles = linkStyles[variant]
+
+  return (
+    <>
+      {topNavItems.map((item) => {
+        const className = item.to === pathname ? styles.active : styles.inactive
+        return item.to ? (
+          <Link className={className} key={item.label} to={item.to}>
+            {item.label}
+          </Link>
+        ) : (
+          <a className={className} href="#" key={item.label}>
+            {item.label}
+          </a>
+        )
+      })}
+    </>
+  )
+}
 
 /**
  * Shared top bar. Each mockup ships a slightly different header — the
@@ -26,30 +86,7 @@ function DashboardTopNav() {
           &gt; EvalLens<span className="blinking-cursor">_</span>
         </h1>
         <nav className="hidden md:flex gap-6">
-          <Link
-            className="text-primary-fixed-dim border-b-2 border-primary-fixed-dim pb-1 font-label-caps text-label-caps"
-            to={routes.dashboard}
-          >
-            DASHBOARD
-          </Link>
-          <a
-            className="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all font-label-caps text-label-caps"
-            href="#"
-          >
-            EVALS
-          </a>
-          <a
-            className="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all font-label-caps text-label-caps"
-            href="#"
-          >
-            LOGS
-          </a>
-          <a
-            className="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all font-label-caps text-label-caps"
-            href="#"
-          >
-            DOCS
-          </a>
+          <TopNavLinks variant="dashboard" />
         </nav>
       </div>
       <div className="flex items-center gap-4">
@@ -73,30 +110,7 @@ function ExplorerTopNav() {
           &gt; EvalLens
         </div>
         <nav className="hidden md:flex gap-6 items-center">
-          <Link
-            className="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all"
-            to={routes.dashboard}
-          >
-            DASHBOARD
-          </Link>
-          <a
-            className="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all"
-            href="#"
-          >
-            EVALS
-          </a>
-          <a
-            className="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all"
-            href="#"
-          >
-            LOGS
-          </a>
-          <a
-            className="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all"
-            href="#"
-          >
-            DOCS
-          </a>
+          <TopNavLinks variant="explorer" />
         </nav>
       </div>
       <div className="flex items-center gap-4">
@@ -124,30 +138,7 @@ function IdeTopNav() {
         </span>
       </div>
       <nav className="hidden md:flex gap-6 items-center">
-        <Link
-          className="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all uppercase"
-          to={routes.dashboard}
-        >
-          DASHBOARD
-        </Link>
-        <a
-          className="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all uppercase"
-          href="#"
-        >
-          EVALS
-        </a>
-        <a
-          className="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all uppercase"
-          href="#"
-        >
-          LOGS
-        </a>
-        <a
-          className="text-primary-fixed-dim border-b-2 border-primary-fixed-dim pb-1 opacity-80 scale-95 transition-transform uppercase"
-          href="#"
-        >
-          DOCS
-        </a>
+        <TopNavLinks variant="ide" />
       </nav>
       <div className="flex items-center gap-4">
         <button className="border border-primary-fixed-dim text-primary-fixed-dim px-4 py-1 hover:bg-primary-fixed-dim/10 hover:shadow-[0_0_8px_rgba(0,230,57,0.6)] font-label-caps text-label-caps uppercase transition-all">
