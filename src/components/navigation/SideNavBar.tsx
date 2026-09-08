@@ -1,23 +1,61 @@
-import { Link } from 'react-router-dom'
-import { routes } from '../../router'
+import { Link, useLocation } from 'react-router-dom'
+import { routes } from '../../routes'
 
 type SideNavVariant = 'explorer' | 'ide'
 
 const OPERATOR_AVATAR =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAMPUgyGwEM0JCAKwbMZe0ebate0qV2yWnxHZFmbpnal-pYo8neWuNkRpk2HqwajcNyygTMOapcuyZCsFyMTea3C_RsZP58ym3J2--lxMCIWlV-X5Kw0g4Rz7E-wY7sTlEFGATMWGuo4nAOdTTjbYDWJfjOlM9VjfnTvoRTQtDxg6qECbv6Iij30aGb4QsyTpORtuHKxToNjpejBpqcwNWRL62_TLofUKcj7a1_xuaouzxJ1IGg9h7R'
 
+interface NavItem {
+  label: string
+  icon: string
+  /** absent for the sections that have no design yet — those stay inert anchors */
+  to?: string
+}
+
+/**
+ * DASHBOARD is not in any mockup's sidebar; it is added so the Dashboard is
+ * reachable from the other screens rather than only through the top bar.
+ */
+const navItems: NavItem[] = [
+  { label: 'DASHBOARD', icon: 'dashboard', to: routes.dashboard },
+  { label: 'TERMINAL', icon: 'terminal' },
+  { label: 'PROMPT_IDE', icon: 'code', to: routes.promptIde },
+  { label: 'DATASETS', icon: 'database', to: routes.datasets },
+  { label: 'MODELS', icon: 'psychology' },
+  { label: 'SETTINGS', icon: 'settings' },
+]
+
 /**
  * Shared app-shell sidebar. The Dataset Explorer and Prompt IDE mockups draw it
  * differently (operator avatar vs. terminal glyph, icon row vs. labelled links),
- * so each is reproduced as its own variant.
+ * so each is reproduced as its own variant. The active item follows the route.
+ *
+ * `stretch` makes the sidebar fill its flex row instead of sizing to content,
+ * which the Dashboard needs because its main column is much taller.
  */
-export default function SideNavBar({ variant }: { variant: SideNavVariant }) {
-  return variant === 'explorer' ? <ExplorerSideNav /> : <IdeSideNav />
+export default function SideNavBar({
+  variant,
+  stretch = false,
+}: {
+  variant: SideNavVariant
+  stretch?: boolean
+}) {
+  const { pathname } = useLocation()
+  const height = stretch ? 'self-stretch' : 'h-full'
+
+  return variant === 'explorer' ? (
+    <ExplorerSideNav height={height} pathname={pathname} />
+  ) : (
+    <IdeSideNav height={height} pathname={pathname} />
+  )
 }
 
-function ExplorerSideNav() {
+function ExplorerSideNav({ height, pathname }: { height: string; pathname: string }) {
   return (
-    <aside className="hidden md:flex flex-col h-full bg-surface-container-low border-r border-outline-variant w-64 py-margin flex-shrink-0 z-40 relative">
+    <aside
+      className={`hidden md:flex flex-col ${height} bg-surface-container-low border-r border-outline-variant w-64 py-margin flex-shrink-0 z-40 relative`}
+    >
       <div className="px-margin mb-8 flex items-center gap-4">
         <div className="w-12 h-12 border border-primary-fixed-dim bg-surface flex items-center justify-center relative overflow-hidden">
           <img
@@ -38,53 +76,40 @@ function ExplorerSideNav() {
         </div>
       </div>
       <nav className="flex flex-col flex-1 gap-1">
-        <a
-          className="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors group"
-          href="#"
-        >
-          <span className="material-symbols-outlined text-[20px] group-hover:neon-cyan">
-            terminal
-          </span>
-          <span className="font-label-caps text-label-caps">TERMINAL</span>
-        </a>
-        <Link
-          className="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors group"
-          to={routes.promptIde}
-        >
-          <span className="material-symbols-outlined text-[20px] group-hover:neon-cyan">code</span>
-          <span className="font-label-caps text-label-caps">PROMPT_IDE</span>
-        </Link>
-        {/* Active State Logic for DATASETS */}
-        <Link
-          className="flex items-center gap-3 text-primary-fixed-dim border-l-4 border-primary-fixed-dim bg-primary-container/10 px-4 py-3 translate-x-1 duration-150"
-          to={routes.datasets}
-        >
-          <span
-            className="material-symbols-outlined text-[20px] neon-green"
-            style={{ fontVariationSettings: "'FILL' 1" }}
-          >
-            database
-          </span>
-          <span className="font-label-caps text-label-caps neon-green">DATASETS</span>
-        </Link>
-        <a
-          className="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors group"
-          href="#"
-        >
-          <span className="material-symbols-outlined text-[20px] group-hover:neon-cyan">
-            psychology
-          </span>
-          <span className="font-label-caps text-label-caps">MODELS</span>
-        </a>
-        <a
-          className="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors group"
-          href="#"
-        >
-          <span className="material-symbols-outlined text-[20px] group-hover:neon-cyan">
-            settings
-          </span>
-          <span className="font-label-caps text-label-caps">SETTINGS</span>
-        </a>
+        {navItems.map((item) => {
+          const active = item.to !== undefined && item.to === pathname
+          const inner = active ? (
+            <>
+              <span
+                className="material-symbols-outlined text-[20px] neon-green"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
+                {item.icon}
+              </span>
+              <span className="font-label-caps text-label-caps neon-green">{item.label}</span>
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-[20px] group-hover:neon-cyan">
+                {item.icon}
+              </span>
+              <span className="font-label-caps text-label-caps">{item.label}</span>
+            </>
+          )
+          const className = active
+            ? 'flex items-center gap-3 text-primary-fixed-dim border-l-4 border-primary-fixed-dim bg-primary-container/10 px-4 py-3 translate-x-1 duration-150'
+            : 'flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors group'
+
+          return item.to ? (
+            <Link className={className} key={item.label} to={item.to}>
+              {inner}
+            </Link>
+          ) : (
+            <a className={className} href="#" key={item.label}>
+              {inner}
+            </a>
+          )
+        })}
       </nav>
       <div className="mt-auto px-margin flex flex-col gap-4">
         <button className="cyber-button-secondary w-full py-2 font-label-caps text-label-caps">
@@ -111,9 +136,11 @@ function ExplorerSideNav() {
   )
 }
 
-function IdeSideNav() {
+function IdeSideNav({ height, pathname }: { height: string; pathname: string }) {
   return (
-    <aside className="hidden md:flex flex-col h-full w-64 bg-surface-container-low dark:bg-surface-container-low text-secondary-fixed dark:text-secondary-fixed font-label-caps text-label-caps border-r border-outline-variant z-40 py-margin">
+    <aside
+      className={`hidden md:flex flex-col ${height} w-64 bg-surface-container-low dark:bg-surface-container-low text-secondary-fixed dark:text-secondary-fixed font-label-caps text-label-caps border-r border-outline-variant z-40 py-margin`}
+    >
       <div className="px-4 mb-8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-surface border border-secondary-fixed-dim flex items-center justify-center relative panel-brackets">
@@ -133,49 +160,36 @@ function IdeSideNav() {
         </div>
       </div>
       <nav className="flex-1 flex flex-col gap-1">
-        <a
-          className="text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors flex items-center gap-3 group"
-          href="#"
-        >
-          <span className="material-symbols-outlined group-hover:text-secondary-fixed-dim transition-colors">
-            terminal
-          </span>
-          TERMINAL
-        </a>
-        <Link
-          className="text-primary-fixed-dim border-l-4 border-primary-fixed-dim bg-primary-container/10 px-4 py-3 translate-x-1 duration-150 flex items-center gap-3 group"
-          to={routes.promptIde}
-        >
-          <span className="material-symbols-outlined text-primary-fixed-dim">code</span>
-          PROMPT_IDE
-        </Link>
-        <Link
-          className="text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors flex items-center gap-3 group"
-          to={routes.datasets}
-        >
-          <span className="material-symbols-outlined group-hover:text-secondary-fixed-dim transition-colors">
-            database
-          </span>
-          DATASETS
-        </Link>
-        <a
-          className="text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors flex items-center gap-3 group"
-          href="#"
-        >
-          <span className="material-symbols-outlined group-hover:text-secondary-fixed-dim transition-colors">
-            psychology
-          </span>
-          MODELS
-        </a>
-        <a
-          className="text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors flex items-center gap-3 group"
-          href="#"
-        >
-          <span className="material-symbols-outlined group-hover:text-secondary-fixed-dim transition-colors">
-            settings
-          </span>
-          SETTINGS
-        </a>
+        {navItems.map((item) => {
+          const active = item.to !== undefined && item.to === pathname
+          const inner = (
+            <>
+              <span
+                className={
+                  active
+                    ? 'material-symbols-outlined text-primary-fixed-dim'
+                    : 'material-symbols-outlined group-hover:text-secondary-fixed-dim transition-colors'
+                }
+              >
+                {item.icon}
+              </span>
+              {item.label}
+            </>
+          )
+          const className = active
+            ? 'text-primary-fixed-dim border-l-4 border-primary-fixed-dim bg-primary-container/10 px-4 py-3 translate-x-1 duration-150 flex items-center gap-3 group'
+            : 'text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors flex items-center gap-3 group'
+
+          return item.to ? (
+            <Link className={className} key={item.label} to={item.to}>
+              {inner}
+            </Link>
+          ) : (
+            <a className={className} href="#" key={item.label}>
+              {inner}
+            </a>
+          )
+        })}
       </nav>
       <div className="mt-auto px-4 flex flex-col gap-2">
         <button className="w-full border border-secondary-fixed text-secondary-fixed py-2 hover:bg-secondary-fixed/10 transition-colors uppercase text-label-caps font-label-caps mb-4">
