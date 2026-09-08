@@ -4,8 +4,8 @@
 candidate model, grade every answer with a second "judge" model, and record quality, latency, and dollar
 cost for each sample — so you can prove a prompt change made things better instead of hoping it did.
 
-> **Status: design phase.** This repository currently holds the UI design system and static mockups for
-> the four main screens. No application code has been written yet. See [Roadmap](#roadmap).
+> **Status: front end only.** The four designed screens are built as a React + TypeScript app; there is
+> no backend yet, so every number on screen comes from seed data in `src/data/`. See [Roadmap](#roadmap).
 
 ---
 
@@ -57,15 +57,16 @@ low-bias quality measurement, and the system is designed around it.*
 
 ## Screens
 
-The mockups live in this repo — each folder has a rendered screenshot (`screen.png`), a static HTML
-prototype (`code.html`), and the design spec (`DESIGN.md`).
+Each screen is implemented as a route in the React app and originates from a mockup folder in this
+repo, which holds a rendered screenshot (`screen.png`), the static HTML prototype (`code.html`), and the
+design spec (`DESIGN.md`).
 
-| Folder | Screen | What it does |
-| --- | --- | --- |
-| [`dashboard/`](dashboard/) | Dashboard | Run history with relevance, faithfulness, cost, and latency; comparison across runs |
-| [`datasets/`](datasets/) | Dataset Explorer | Browse and inspect evaluation datasets and their samples |
-| [`datasets_tagging/`](datasets_tagging/) | Dataset Explorer + Tag Manager | The explorer with the tag-management modal open, for labeling samples |
-| [`prompt_ide/`](prompt_ide/) | Prompt IDE | Author prompts, pick models, and track version history |
+| Route | Screen | Mockup | What it does |
+| --- | --- | --- | --- |
+| `/` | Dashboard | [`dashboard/`](dashboard/) | Score, cost and run tiles, a scores-over-time chart, and the evaluation run table |
+| `/datasets` | Dataset Explorer | [`datasets/`](datasets/) | Browse datasets, inspect allocation stats, preview samples |
+| `/datasets` | Tag Manager | [`datasets_tagging/`](datasets_tagging/) | Overlay for labelling a sample; opens from a row's TAGS cell |
+| `/prompt-ide` | Prompt IDE | [`prompt_ide/`](prompt_ide/) | Prompt versions, the system prompt buffer, sampling parameters, console output |
 
 ![Dashboard](dashboard/screen.png)
 
@@ -74,12 +75,21 @@ aesthetic with neon accents on a near-black ground: green for standard state and
 active/running processes, magenta for data visualization and cost. The full token set and layout rules
 are documented identically in each `DESIGN.md`.
 
-## Planned stack
+## Getting started
+
+```bash
+npm install
+npm run dev      # Vite dev server on http://localhost:5173
+npm run build    # type-check and produce a production build in dist/
+npm run preview  # serve the production build
+```
+
+## Stack
 
 Everything here is free and open source; the only thing that ever costs money is model API tokens.
 
-**Backend** — Python, FastAPI, SQLModel, Alembic
-**Frontend** — React, Vite, TypeScript, Tailwind, shadcn/ui, TanStack Query/Table, Recharts
+**Frontend (built)** — React 18, Vite, TypeScript, Tailwind CSS, React Router
+**Backend (planned)** — Python, FastAPI, SQLModel, Alembic
 **Relational store** — SQLite for the single-user build, with a clean path to PostgreSQL
 **Vector store** — Chroma embedded, with a path to pgvector or Qdrant *(RAG evaluation only: retrieval
 metrics like context precision and recall need the retrieved chunks stored, not just final answers)*
@@ -104,6 +114,7 @@ zero — the architecture does not depend on any paid service.
 ## Roadmap
 
 - [x] Design system and static mockups for the four core screens
+- [x] React + TypeScript front end for all four screens, rendering from seed data
 - [ ] FastAPI backend: `runs`, `samples`, `scores` schema and migrations
 - [ ] Provider abstraction for candidate and judge models (OpenAI + local)
 - [ ] Judge with structured output, pinned versions, and rubric versioning
@@ -115,10 +126,41 @@ zero — the architecture does not depend on any paid service.
 
 ## Repository layout
 
+The app follows the "intermediate" layout in [fileStructureGuide.md](fileStructureGuide.md): shared
+chrome in `components/`, one folder per screen under `pages/`, and screen-only components and hooks
+kept inside the page that owns them.
+
 ```
-dashboard/            Dashboard mockup      (screen.png, code.html, DESIGN.md)
-datasets/             Dataset explorer mockup
-datasets_tagging/     Dataset explorer with tag manager
-prompt_ide/           Prompt IDE mockup
-docs/                 Planning notes and saved design conversations
+src/
+├─ assets/styles/       index.css — Tailwind entry plus the mockups' CSS
+├─ components/
+│  ├─ navigation/       TopNavBar, SideNavBar
+│  └─ ui/               Footer, ScanlineOverlay, PanelBrackets
+├─ data/                Seed content for each screen
+├─ pages/
+│  ├─ Dashboard/        Dashboard.tsx + components/
+│  ├─ Datasets/         Datasets.tsx + components/
+│  └─ PromptIde/        PromptIde.tsx + components/ + hooks/
+├─ router.tsx           Route config
+├─ App.tsx
+└─ main.tsx
+
+dashboard/              Dashboard mockup  (screen.png, code.html, DESIGN.md)
+datasets/               Dataset explorer mockup
+datasets_tagging/       Dataset explorer with tag manager
+prompt_ide/             Prompt IDE mockup
+docs/                   Planning notes and saved design conversations
 ```
+
+### Notes on the port
+
+The markup and class lists are copied from `code.html` and changed only where JSX or a single-page app
+required it:
+
+- Per-page `body` rules and colliding class names are scoped under `.page-dashboard`,
+  `.page-datasets` and `.page-prompt-ide`, since three standalone documents now share one page.
+- Two keyframe sets were renamed to stop them shadowing each other and Tailwind's own `pulse`.
+- The Prompt IDE's inline `<script>` became the `useConsoleStream` hook; the Tag Manager's inline
+  `onclick` that deleted the modal node became React state.
+- Text inputs render dark here. In the mockups they render as opaque white boxes — an artifact of the
+  Tailwind CDN's `forms` plugin overriding `.cyber-input`, against what `DESIGN.md` describes.
