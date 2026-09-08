@@ -8,5 +8,6 @@ export const routes = {
   evals: '/evals',
   datasets: '/datasets',
   logs: '/logs',
+  models: '/models',
   promptIde: '/prompt-ide',
 } as const
