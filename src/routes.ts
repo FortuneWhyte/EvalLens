@@ -7,5 +7,6 @@ export const routes = {
   dashboard: '/',
   evals: '/evals',
   datasets: '/datasets',
+  logs: '/logs',
   promptIde: '/prompt-ide',
 } as const

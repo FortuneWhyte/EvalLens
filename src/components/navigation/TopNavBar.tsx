@@ -12,7 +12,7 @@ interface TopNavItem {
 const topNavItems: TopNavItem[] = [
   { label: 'DASHBOARD', to: routes.dashboard },
   { label: 'EVALS', to: routes.evals },
-  { label: 'LOGS' },
+  { label: 'LOGS', to: routes.logs },
   { label: 'DOCS' },
 ]
 
