@@ -89,6 +89,8 @@ are documented identically in each `DESIGN.md`.
 
 ## Getting started
 
+**Front end**
+
 ```bash
 npm install
 npm run dev      # Vite dev server on http://localhost:5173
@@ -96,12 +98,27 @@ npm run build    # type-check and produce a production build in dist/
 npm run preview  # serve the production build
 ```
 
+**Backend** — see [backend/README.md](backend/README.md) for detail.
+
+```bash
+cd backend
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python seed.py                    # load sample datasets
+.venv/bin/uvicorn app.main:app --reload     # http://localhost:8000
+.venv/bin/python -m pytest                  # 30 tests, no API key needed
+```
+
+The backend runs end to end with no API key: a built-in mock provider answers
+without a network call, so a full evaluation can be run and inspected at zero
+cost.
+
 ## Stack
 
 Everything here is free and open source; the only thing that ever costs money is model API tokens.
 
-**Frontend (built)** — React 18, Vite, TypeScript, Tailwind CSS, React Router
-**Backend (planned)** — Python, FastAPI, SQLModel, Alembic
+**Frontend** — React 18, Vite, TypeScript, Tailwind CSS, React Router
+**Backend** — Python, FastAPI, SQLModel, SQLite, httpx, pytest
 **Relational store** — SQLite for the single-user build, with a clean path to PostgreSQL
 **Vector store** — Chroma embedded, with a path to pgvector or Qdrant *(RAG evaluation only: retrieval
 metrics like context precision and recall need the retrieved chunks stored, not just final answers)*
@@ -128,12 +145,13 @@ zero — the architecture does not depend on any paid service.
 - [x] Design system and static mockups for the four core screens
 - [x] React + TypeScript front end for all four designed screens, rendering from seed data
 - [x] Evals, Logs, Models, Settings and Terminal screens, extending the same design system
-- [ ] FastAPI backend: `runs`, `samples`, `scores` schema and migrations
-- [ ] Provider abstraction for candidate and judge models (OpenAI + local)
-- [ ] Judge with structured output, pinned versions, and rubric versioning
-- [ ] Async run execution with progress reporting
-- [ ] React dashboard wired to the API
-- [ ] Cost tracking: exact dollar cost per run, with a running total on the dashboard
+- [x] FastAPI backend: `runs`, `samples`, `scores` schema
+- [x] Provider abstraction for candidate and judge models (OpenAI, Anthropic, Ollama, mock)
+- [x] Judge with structured output, pinned versions, and rubric versioning
+- [x] Async run execution with concurrency limits and failure isolation
+- [x] Cost tracking: per-call pricing from token counts, rolled up per run
+- [ ] Alembic migration (tables are currently created from the models at startup)
+- [ ] React dashboard wired to the API instead of its own seed data
 - [ ] Golden-set judge validation and human-agreement reporting
 - [ ] RAG evaluation: retrieval storage and context precision/recall metrics
 
@@ -163,6 +181,16 @@ src/
 ├─ routes.ts            Route paths (kept separate to avoid an import cycle)
 ├─ App.tsx
 └─ main.tsx
+
+backend/                FastAPI service
+├─ app/
+│  ├─ providers/        Provider seam: openai, anthropic, ollama, mock + pricing
+│  ├─ api/routes.py     HTTP endpoints
+│  ├─ models.py         Database tables
+│  ├─ judge.py          Rubric, structured scoring, bias guards
+│  └─ runner.py         Run orchestration
+├─ tests/               30 tests, no API key needed
+└─ seed.py              Load the sample datasets
 
 dashboard/              Dashboard mockup  (screen.png, code.html, DESIGN.md)
 datasets/               Dataset explorer mockup
