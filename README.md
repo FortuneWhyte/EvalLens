@@ -61,6 +61,9 @@ Each screen is implemented as a route in the React app and originates from a moc
 repo, which holds a rendered screenshot (`screen.png`), the static HTML prototype (`code.html`), and the
 design spec (`DESIGN.md`).
 
+All three screens are reachable from each other through the sidebar; the active item follows the route.
+Links to sections that were never designed (TERMINAL, MODELS, SETTINGS, EVALS, LOGS, DOCS) stay inert.
+
 | Route | Screen | Mockup | What it does |
 | --- | --- | --- | --- |
 | `/` | Dashboard | [`dashboard/`](dashboard/) | Score, cost and run tiles, a scores-over-time chart, and the evaluation run table |
@@ -142,6 +145,7 @@ src/
 │  ├─ Datasets/         Datasets.tsx + components/
 │  └─ PromptIde/        PromptIde.tsx + components/ + hooks/
 ├─ router.tsx           Route config
+├─ routes.ts            Route paths (kept separate to avoid an import cycle)
 ├─ App.tsx
 └─ main.tsx
 
@@ -162,5 +166,7 @@ required it:
 - Two keyframe sets were renamed to stop them shadowing each other and Tailwind's own `pulse`.
 - The Prompt IDE's inline `<script>` became the `useConsoleStream` hook; the Tag Manager's inline
   `onclick` that deleted the modal node became React state.
+- The sidebar gained a DASHBOARD entry, and now renders on the Dashboard as well. No mockup shows it
+  there, but without it the Dashboard cannot reach the other two screens.
 - Text inputs render dark here. In the mockups they render as opaque white boxes — an artifact of the
   Tailwind CDN's `forms` plugin overriding `.cyber-input`, against what `DESIGN.md` describes.
