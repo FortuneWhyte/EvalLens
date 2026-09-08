@@ -4,8 +4,9 @@
 candidate model, grade every answer with a second "judge" model, and record quality, latency, and dollar
 cost for each sample — so you can prove a prompt change made things better instead of hoping it did.
 
-> **Status: front end only.** The four designed screens are built as a React + TypeScript app; there is
-> no backend yet, so every number on screen comes from seed data in `src/data/`. See [Roadmap](#roadmap).
+> **Status: front end only.** Eight screens are built as a React + TypeScript app. There is no backend
+> yet, so every number on screen comes from seed data in `src/data/`, one module per screen — those are
+> the files that get swapped for API calls later. See [Roadmap](#roadmap).
 
 ---
 
@@ -61,8 +62,9 @@ Each screen is implemented as a route in the React app and originates from a moc
 repo, which holds a rendered screenshot (`screen.png`), the static HTML prototype (`code.html`), and the
 design spec (`DESIGN.md`).
 
-All three screens are reachable from each other through the sidebar; the active item follows the route.
-Links to sections that were never designed (TERMINAL, MODELS, SETTINGS, EVALS, LOGS, DOCS) stay inert.
+Eight routes, all reachable from each other through the top nav and sidebar; the active item follows
+the route. Only DOCS remains inert. The first four screens are ports of the supplied mockups; the rest
+had no design, so they extend the same system — shell, panel treatment, badge states and type scale.
 
 | Route | Screen | Mockup | What it does |
 | --- | --- | --- | --- |
@@ -70,6 +72,13 @@ Links to sections that were never designed (TERMINAL, MODELS, SETTINGS, EVALS, L
 | `/datasets` | Dataset Explorer | [`datasets/`](datasets/) | Browse datasets, inspect allocation stats, preview samples |
 | `/datasets` | Tag Manager | [`datasets_tagging/`](datasets_tagging/) | Overlay for labelling a sample; opens from a row's TAGS cell |
 | `/prompt-ide` | Prompt IDE | [`prompt_ide/`](prompt_ide/) | Prompt versions, the system prompt buffer, sampling parameters, console output |
+| `/evals` | Evals | — | Run list, headline scores, the provenance behind them, and per-sample judge reasoning |
+| `/logs` | Logs | — | Filterable stream of runner, provider and judge lines with token counts and per-call cost |
+| `/models` | Models | — | Registry of providers and models: role, readiness, context window, per-million pricing |
+| `/settings` | Settings | — | API keys, monthly spend cap, judge configuration, run guardrails |
+| `/terminal` | Terminal | — | Working command console: `help`, `runs`, `run`, `models`, `cost`, `clear` |
+
+Unknown routes redirect to the Dashboard.
 
 ![Dashboard](dashboard/screen.png)
 
@@ -117,7 +126,8 @@ zero — the architecture does not depend on any paid service.
 ## Roadmap
 
 - [x] Design system and static mockups for the four core screens
-- [x] React + TypeScript front end for all four screens, rendering from seed data
+- [x] React + TypeScript front end for all four designed screens, rendering from seed data
+- [x] Evals, Logs, Models, Settings and Terminal screens, extending the same design system
 - [ ] FastAPI backend: `runs`, `samples`, `scores` schema and migrations
 - [ ] Provider abstraction for candidate and judge models (OpenAI + local)
 - [ ] Judge with structured output, pinned versions, and rubric versioning
@@ -143,7 +153,12 @@ src/
 ├─ pages/
 │  ├─ Dashboard/        Dashboard.tsx + components/
 │  ├─ Datasets/         Datasets.tsx + components/
-│  └─ PromptIde/        PromptIde.tsx + components/ + hooks/
+│  ├─ Evals/            Evals.tsx + components/
+│  ├─ Logs/             Logs.tsx + components/
+│  ├─ Models/           Models.tsx + components/
+│  ├─ PromptIde/        PromptIde.tsx + components/ + hooks/
+│  ├─ Settings/         Settings.tsx + components/
+│  └─ Terminal/         Terminal.tsx + hooks/
 ├─ router.tsx           Route config
 ├─ routes.ts            Route paths (kept separate to avoid an import cycle)
 ├─ App.tsx
