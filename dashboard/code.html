@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EvalLens Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-container": "#ad00ad",
+                      "surface-tint": "#00e639",
+                      "on-tertiary-fixed-variant": "#810081",
+                      "on-error-container": "#ffdad6",
+                      "surface-bright": "#39383e",
+                      "secondary-fixed": "#6ff6ff",
+                      "on-surface": "#e4e1e9",
+                      "surface": "#131318",
+                      "surface-variant": "#35343a",
+                      "surface-container": "#1f1f25",
+                      "inverse-surface": "#e4e1e9",
+                      "surface-container-lowest": "#0e0e13",
+                      "on-background": "#e4e1e9",
+                      "inverse-on-surface": "#303036",
+                      "outline-variant": "#3b4b37",
+                      "error": "#ffb4ab",
+                      "primary-container": "#00ff41",
+                      "on-secondary-fixed": "#002022",
+                      "secondary": "#dcfdff",
+                      "surface-container-high": "#2a292f",
+                      "secondary-container": "#00f1fd",
+                      "primary-fixed": "#72ff70",
+                      "on-secondary-fixed-variant": "#004f53",
+                      "error-container": "#93000a",
+                      "surface-container-highest": "#35343a",
+                      "primary-fixed-dim": "#00e639",
+                      "inverse-primary": "#006e16",
+                      "on-primary-fixed": "#002203",
+                      "on-tertiary-fixed": "#380038",
+                      "surface-container-low": "#1b1b20",
+                      "background": "#131318",
+                      "tertiary-fixed": "#ffd7f5",
+                      "primary": "#ebffe2",
+                      "tertiary-fixed-dim": "#ffabf3",
+                      "tertiary-container": "#ffcef4",
+                      "on-error": "#690005",
+                      "on-secondary": "#00373a",
+                      "on-tertiary": "#5b005b",
+                      "on-primary": "#003907",
+                      "outline": "#84967e",
+                      "tertiary": "#fff7f9",
+                      "on-primary-container": "#007117",
+                      "surface-dim": "#131318",
+                      "on-primary-fixed-variant": "#00530e",
+                      "on-surface-variant": "#b9ccb2",
+                      "secondary-fixed-dim": "#00dce6",
+                      "on-secondary-container": "#006a6f"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin": "24px",
+                      "container-max": "1440px",
+                      "gutter": "16px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "display": [
+                              "JetBrains Mono"
+                      ],
+                      "body-md": [
+                              "JetBrains Mono"
+                      ],
+                      "body-lg": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg": [
+                              "JetBrains Mono"
+                      ],
+                      "label-caps": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-md": [
+                              "JetBrains Mono"
+                      ],
+                      "code": [
+                              "JetBrains Mono"
+                      ]
+              },
+              "fontSize": {
+                      "display": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "code": [
+                              "13px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0a0a0f;
+            background-image: 
+                linear-gradient(rgba(0, 230, 57, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 230, 57, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .crt-flicker {
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.95; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        .blinking-cursor {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .panel-bracket-tl { clip-path: polygon(0 0, 10px 0, 10px 2px, 2px 2px, 2px 10px, 0 10px); }
+        .panel-bracket-tr { clip-path: polygon(100% 0, 100% 10px, calc(100% - 2px) 10px, calc(100% - 2px) 2px, calc(100% - 10px) 2px, calc(100% - 10px) 0); }
+        .panel-bracket-bl { clip-path: polygon(0 100%, 0 calc(100% - 10px), 2px calc(100% - 10px), 2px calc(100% - 2px), 10px calc(100% - 2px), 10px 100%); }
+        .panel-bracket-br { clip-path: polygon(100% 100%, calc(100% - 10px) 100%, calc(100% - 10px) calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) calc(100% - 10px), 100% calc(100% - 10px)); }
+
+        .glitch-text {
+            position: relative;
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -1px 0 red;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -1px 0 blue;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(20px, 9999px, 93px, 0); }
+            20% { clip: rect(77px, 9999px, 86px, 0); }
+            40% { clip: rect(10px, 9999px, 45px, 0); }
+            60% { clip: rect(98px, 9999px, 60px, 0); }
+            80% { clip: rect(34px, 9999px, 12px, 0); }
+            100% { clip: rect(56px, 9999px, 8px, 0); }
+        }
+
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .ticker {
+            display: inline-block;
+            animation: ticker 20s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translate3d(100%, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+        
+        .pulse-cyan {
+            animation: pulse-c 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-c {
+            0%, 100% { opacity: 1; text-shadow: 0 0 8px rgba(0, 241, 253, 0.8); }
+            50% { opacity: .5; text-shadow: 0 0 2px rgba(0, 241, 253, 0.3); }
+        }
+
+        /* Chart placeholder */
+        .chart-grid {
+            background-image: 
+                linear-gradient(rgba(0, 230, 57, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 230, 57, 0.2) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center center;
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body-md crt-flicker min-h-screen flex flex-col relative pb-8">
+<div class="scanlines"></div>
+<!-- TopNavBar -->
+<header class="bg-surface border-b border-outline-variant bg-surface-container-lowest shadow-[0_0_10px_rgba(0,230,57,0.2)] flex justify-between items-center px-margin py-4 w-full docked full-width top-0 z-30 relative">
+<div class="flex items-center gap-8">
+<h1 class="font-display text-headline-md text-primary-fixed-dim drop-shadow-[0_0_8px_rgba(0,230,57,0.8)] glitch-text" data-text="&gt; EvalLens">&gt; EvalLens<span class="blinking-cursor">_</span></h1>
+<nav class="hidden md:flex gap-6">
+<a class="text-primary-fixed-dim border-b-2 border-primary-fixed-dim pb-1 font-label-caps text-label-caps" href="#">DASHBOARD</a>
+<a class="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all font-label-caps text-label-caps" href="#">EVALS</a>
+<a class="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all font-label-caps text-label-caps" href="#">LOGS</a>
+<a class="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all font-label-caps text-label-caps" href="#">DOCS</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-2 text-primary-fixed-dim font-code text-code">
+<span class="w-2 h-2 bg-primary-fixed-dim block pulse-cyan"></span>
+                SYSTEM ONLINE
+            </div>
+<button class="border border-primary-fixed-dim text-primary-fixed-dim px-4 py-2 font-label-caps text-label-caps hover:bg-primary-fixed-dim/10 hover:drop-shadow-[0_0_8px_rgba(0,230,57,0.6)] transition-all uppercase">[ RUN_EVAL ]</button>
+</div>
+</header>
+<main class="flex-grow p-margin max-w-container-max mx-auto w-full flex flex-col gap-8 relative z-10 mt-4">
+<!-- Row 1: Stats -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Stat 1 -->
+<div class="relative bg-surface-container-low border border-primary-fixed-dim p-4 shadow-[0_0_8px_rgba(0,230,57,0.15)] group">
+<div class="absolute inset-0 bg-primary-fixed-dim panel-bracket-tl"></div>
+<div class="absolute inset-0 bg-primary-fixed-dim panel-bracket-tr"></div>
+<div class="absolute inset-0 bg-primary-fixed-dim panel-bracket-bl"></div>
+<div class="absolute inset-0 bg-primary-fixed-dim panel-bracket-br"></div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-2">RELEVANCE</h3>
+<div class="flex items-end gap-3">
+<span class="font-display text-headline-lg text-primary-fixed-dim drop-shadow-[0_0_5px_rgba(0,230,57,0.5)]">92%</span>
+<span class="font-code text-code text-primary-fixed-dim mb-1">+2%</span>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="relative bg-surface-container-low border border-secondary-container p-4 shadow-[0_0_8px_rgba(0,241,253,0.15)] group">
+<div class="absolute inset-0 bg-secondary-container panel-bracket-tl"></div>
+<div class="absolute inset-0 bg-secondary-container panel-bracket-tr"></div>
+<div class="absolute inset-0 bg-secondary-container panel-bracket-bl"></div>
+<div class="absolute inset-0 bg-secondary-container panel-bracket-br"></div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-2">FAITHFULNESS</h3>
+<div class="flex items-end gap-3">
+<span class="font-display text-headline-lg text-secondary-container drop-shadow-[0_0_5px_rgba(0,241,253,0.5)]">88%</span>
+<span class="font-code text-code text-error mb-1">-1%</span>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="relative bg-surface-container-low border border-on-tertiary-container p-4 shadow-[0_0_8px_rgba(173,0,173,0.15)] group">
+<div class="absolute inset-0 bg-on-tertiary-container panel-bracket-tl"></div>
+<div class="absolute inset-0 bg-on-tertiary-container panel-bracket-tr"></div>
+<div class="absolute inset-0 bg-on-tertiary-container panel-bracket-bl"></div>
+<div class="absolute inset-0 bg-on-tertiary-container panel-bracket-br"></div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-2">COST</h3>
+<div class="flex items-end gap-3">
+<span class="font-display text-headline-lg text-on-tertiary-container drop-shadow-[0_0_5px_rgba(173,0,173,0.5)]">$4.21</span>
+<span class="font-code text-code text-error mb-1">+0.05</span>
+</div>
+</div>
+<!-- Stat 4 -->
+<div class="relative bg-surface-container-low border border-primary-fixed-dim p-4 shadow-[0_0_8px_rgba(0,230,57,0.15)] group">
+<div class="absolute inset-0 bg-primary-fixed-dim panel-bracket-tl"></div>
+<div class="absolute inset-0 bg-primary-fixed-dim panel-bracket-tr"></div>
+<div class="absolute inset-0 bg-primary-fixed-dim panel-bracket-bl"></div>
+<div class="absolute inset-0 bg-primary-fixed-dim panel-bracket-br"></div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-2">RUNS</h3>
+<div class="flex items-end gap-3">
+<span class="font-display text-headline-lg text-primary-fixed-dim drop-shadow-[0_0_5px_rgba(0,230,57,0.5)]">36</span>
+<span class="font-code text-code text-primary-fixed-dim mb-1">+4</span>
+</div>
+</div>
+</section>
+<!-- Row 2: Chart -->
+<section class="relative bg-surface-container-low border border-outline-variant p-1 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+<div class="absolute inset-0 bg-outline-variant panel-bracket-tl"></div>
+<div class="absolute inset-0 bg-outline-variant panel-bracket-tr"></div>
+<div class="absolute inset-0 bg-outline-variant panel-bracket-bl"></div>
+<div class="absolute inset-0 bg-outline-variant panel-bracket-br"></div>
+<div class="bg-surface-container-lowest h-64 chart-grid relative overflow-hidden flex items-center justify-center border border-surface-container">
+<div class="absolute top-2 left-2 bg-surface-container-highest px-2 py-1 border border-outline-variant">
+<span class="font-label-caps text-label-caps text-on-surface">// SCORES_OVER_TIME</span>
+</div>
+<!-- SVG Chart Mock -->
+<svg class="w-full h-full absolute inset-0 opacity-80" preserveaspectratio="none" viewbox="0 0 1000 200">
+<defs>
+<lineargradient id="neon-glow" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#00e639" stop-opacity="0.8"></stop>
+<stop offset="50%" stop-color="#00e639" stop-opacity="1"></stop>
+<stop offset="100%" stop-color="#00e639" stop-opacity="0.8"></stop>
+</lineargradient>
+<filter height="140%" id="glow" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="3"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<path d="M 0,150 Q 50,140 100,100 T 200,120 T 300,80 T 400,110 T 500,40 T 600,90 T 700,50 T 800,70 T 900,30 T 1000,60" fill="none" filter="url(#glow)" stroke="url(#neon-glow)" stroke-width="3"></path>
+</svg>
+</div>
+</section>
+<!-- Row 3: Data Table -->
+<section class="relative bg-surface-container-low border border-outline-variant p-6 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+<div class="absolute inset-0 bg-outline-variant panel-bracket-tl"></div>
+<div class="absolute inset-0 bg-outline-variant panel-bracket-tr"></div>
+<div class="absolute inset-0 bg-outline-variant panel-bracket-bl"></div>
+<div class="absolute inset-0 bg-outline-variant panel-bracket-br"></div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 glitch-text" data-text="// EVALUATION_RUNS">// EVALUATION_RUNS</h2>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse font-code text-code">
+<thead>
+<tr class="border-b border-outline-variant text-on-surface-variant font-label-caps text-label-caps">
+<th class="py-2 px-4 font-normal">RUN_ID</th>
+<th class="py-2 px-4 font-normal">MODEL</th>
+<th class="py-2 px-4 font-normal">PROMPT_VER</th>
+<th class="py-2 px-4 font-normal">STATUS</th>
+<th class="py-2 px-4 font-normal">RELEVANCE</th>
+<th class="py-2 px-4 font-normal">FAITHFULNESS</th>
+<th class="py-2 px-4 font-normal">LATENCY_MS</th>
+<th class="py-2 px-4 font-normal text-right">COST</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-surface-container-highest hover:bg-surface-variant/20 hover:text-primary-fixed transition-colors group cursor-pointer">
+<td class="py-3 px-4">EVL-1042</td>
+<td class="py-3 px-4">gpt-4-turbo</td>
+<td class="py-3 px-4">v1.2.4</td>
+<td class="py-3 px-4"><span class="text-primary-fixed-dim drop-shadow-[0_0_5px_rgba(0,230,57,0.5)]">[DONE]</span></td>
+<td class="py-3 px-4">94%</td>
+<td class="py-3 px-4">89%</td>
+<td class="py-3 px-4">320</td>
+<td class="py-3 px-4 text-right">$1.02</td>
+</tr>
+<tr class="border-b border-surface-container-highest hover:bg-surface-variant/20 hover:text-secondary-container transition-colors group cursor-pointer">
+<td class="py-3 px-4">EVL-1043</td>
+<td class="py-3 px-4">claude-3-opus</td>
+<td class="py-3 px-4">v1.2.4</td>
+<td class="py-3 px-4"><span class="text-secondary-container pulse-cyan inline-block">[RUNNING]</span></td>
+<td class="py-3 px-4">--</td>
+<td class="py-3 px-4">--</td>
+<td class="py-3 px-4">--</td>
+<td class="py-3 px-4 text-right">--</td>
+</tr>
+<tr class="border-b border-surface-container-highest hover:bg-surface-variant/20 hover:text-primary-fixed transition-colors group cursor-pointer">
+<td class="py-3 px-4 text-on-surface-variant">EVL-1044</td>
+<td class="py-3 px-4 text-on-surface-variant">llama-3-70b</td>
+<td class="py-3 px-4 text-on-surface-variant">v1.2.5-draft</td>
+<td class="py-3 px-4"><span class="text-on-surface-variant">[QUEUED]</span></td>
+<td class="py-3 px-4 text-on-surface-variant">--</td>
+<td class="py-3 px-4 text-on-surface-variant">--</td>
+<td class="py-3 px-4 text-on-surface-variant">--</td>
+<td class="py-3 px-4 text-right text-on-surface-variant">--</td>
+</tr>
+<tr class="border-b border-surface-container-highest hover:bg-surface-variant/20 hover:text-error transition-colors group cursor-pointer">
+<td class="py-3 px-4">EVL-1041</td>
+<td class="py-3 px-4">gpt-3.5-turbo</td>
+<td class="py-3 px-4">v1.1.0</td>
+<td class="py-3 px-4"><span class="text-error drop-shadow-[0_0_5px_rgba(255,180,171,0.5)]">[FAILED]</span></td>
+<td class="py-3 px-4 text-on-surface-variant">--</td>
+<td class="py-3 px-4 text-on-surface-variant">--</td>
+<td class="py-3 px-4">800 (T/O)</td>
+<td class="py-3 px-4 text-right">$0.04</td>
+</tr>
+<tr class="border-b border-surface-container-highest hover:bg-surface-variant/20 hover:text-primary-fixed transition-colors group cursor-pointer">
+<td class="py-3 px-4">EVL-1040</td>
+<td class="py-3 px-4">gpt-4-turbo</td>
+<td class="py-3 px-4">v1.2.3</td>
+<td class="py-3 px-4"><span class="text-primary-fixed-dim drop-shadow-[0_0_5px_rgba(0,230,57,0.5)]">[DONE]</span></td>
+<td class="py-3 px-4">91%</td>
+<td class="py-3 px-4">87%</td>
+<td class="py-3 px-4">410</td>
+<td class="py-3 px-4 text-right">$0.98</td>
+</tr>
+<tr class="border-b border-surface-container-highest hover:bg-surface-variant/20 hover:text-primary-fixed transition-colors group cursor-pointer">
+<td class="py-3 px-4">EVL-1039</td>
+<td class="py-3 px-4">mixtral-8x7b</td>
+<td class="py-3 px-4">v1.2.3</td>
+<td class="py-3 px-4"><span class="text-primary-fixed-dim drop-shadow-[0_0_5px_rgba(0,230,57,0.5)]">[DONE]</span></td>
+<td class="py-3 px-4">88%</td>
+<td class="py-3 px-4">82%</td>
+<td class="py-3 px-4">120</td>
+<td class="py-3 px-4 text-right">$0.12</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- Footer Ticker -->
+<footer class="fixed bottom-0 w-full bg-surface-container-lowest border-t border-outline-variant py-1 z-50 overflow-hidden after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(transparent_50%,black_50%)] after:bg-[length:100%_2px] after:pointer-events-none after:opacity-10">
+<div class="ticker-wrap font-code text-code text-on-surface-variant/70 px-4">
+<div class="ticker">
+                &gt; SYS_LOAD: 12% | LATENCY_AVG: 240ms | BUFFER_STABLE | API_QUOTA: 84% | MEMORY: 4GB/16GB | ACTIVE_NODES: 3 | LAST_SYNC: 0.04s AGO | (C) 2024 EVAL_LENS // SYSTEM_STABLE &gt; SYS_LOAD: 12% | LATENCY_AVG: 240ms | BUFFER_STABLE
+            </div>
+</div>
+</footer>
+</body></html>

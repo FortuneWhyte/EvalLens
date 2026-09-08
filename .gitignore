@@ -1,0 +1,38 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+build/
+.vite/
+*.local
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Databases / local data
+*.db
+*.sqlite
+*.sqlite3
+.chroma/
+chroma_db/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*

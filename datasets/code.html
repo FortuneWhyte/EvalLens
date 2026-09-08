@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EvalLens - Dataset Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* Custom Tailwind Configuration Injected Here for Consistency if Script Fails, though Script is Preferred */
+        :root {
+            --primary-glow: rgba(0,230,57,0.8);
+            --secondary-glow: rgba(0,220,230,0.8);
+            --tertiary-glow: rgba(255,171,243,0.6);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#ffabf3",
+                      "on-secondary-container": "#006a6f",
+                      "on-background": "#e4e1e9",
+                      "surface-container-lowest": "#0e0e13",
+                      "outline": "#84967e",
+                      "on-tertiary": "#5b005b",
+                      "tertiary": "#fff7f9",
+                      "surface-variant": "#35343a",
+                      "on-surface-variant": "#b9ccb2",
+                      "on-tertiary-container": "#ad00ad",
+                      "inverse-surface": "#e4e1e9",
+                      "surface-container": "#1f1f25",
+                      "on-tertiary-fixed-variant": "#810081",
+                      "on-primary": "#003907",
+                      "surface-container-highest": "#35343a",
+                      "on-surface": "#e4e1e9",
+                      "surface-container-high": "#2a292f",
+                      "surface-dim": "#131318",
+                      "tertiary-container": "#ffcef4",
+                      "primary": "#ebffe2",
+                      "on-error": "#690005",
+                      "on-tertiary-fixed": "#380038",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#303036",
+                      "secondary-container": "#00f1fd",
+                      "on-primary-fixed": "#002203",
+                      "on-secondary": "#00373a",
+                      "secondary-fixed-dim": "#00dce6",
+                      "on-primary-fixed-variant": "#00530e",
+                      "surface-bright": "#39383e",
+                      "outline-variant": "#3b4b37",
+                      "on-secondary-fixed-variant": "#004f53",
+                      "inverse-primary": "#006e16",
+                      "primary-fixed": "#72ff70",
+                      "on-error-container": "#ffdad6",
+                      "primary-container": "#00ff41",
+                      "background": "#131318",
+                      "surface-container-low": "#1b1b20",
+                      "on-primary-container": "#007117",
+                      "secondary": "#dcfdff",
+                      "on-secondary-fixed": "#002022",
+                      "error-container": "#93000a",
+                      "primary-fixed-dim": "#00e639",
+                      "surface": "#131318",
+                      "surface-tint": "#00e639",
+                      "tertiary-fixed": "#ffd7f5",
+                      "secondary-fixed": "#6ff6ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin": "24px",
+                      "container-max": "1440px",
+                      "gutter": "16px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["JetBrains Mono"],
+                      "display": ["JetBrains Mono"],
+                      "code": ["JetBrains Mono"],
+                      "body-md": ["JetBrains Mono"],
+                      "body-lg": ["JetBrains Mono"],
+                      "label-caps": ["JetBrains Mono"],
+                      "headline-md": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                      "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.05em", "fontWeight": "700" }],
+                      "code": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                      "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                      "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                      "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                      "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        /* Base Cyberpunk Styles */
+        body {
+            background-color: #131318;
+            color: #e4e1e9;
+            font-family: 'JetBrains Mono', monospace;
+            overflow-x: hidden;
+        }
+
+        /* Scanline Overlay */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.6;
+        }
+
+        /* Grid Background */
+        .grid-bg {
+            background-size: 24px 24px;
+            background-image: linear-gradient(to right, rgba(132, 150, 126, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(132, 150, 126, 0.05) 1px, transparent 1px);
+        }
+
+        /* Glowing Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131318;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00e639;
+            border-radius: 0;
+            box-shadow: 0 0 5px rgba(0,230,57,0.5);
+        }
+
+        /* Button & Panel Hover Effects */
+        .cyber-panel {
+            border: 1px solid #3b4b37;
+            background: #1b1b20;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+        }
+        .cyber-panel:hover {
+            border-color: #00e639;
+            box-shadow: inset 0 0 10px rgba(0,230,57,0.1), 0 0 5px rgba(0,230,57,0.2);
+        }
+
+        .cyber-button {
+            border: 1px solid #00e639;
+            background: transparent;
+            color: #00e639;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 5px rgba(0,230,57,0.2);
+        }
+        .cyber-button:hover {
+            background: rgba(0,230,57,0.1);
+            box-shadow: 0 0 15px rgba(0,230,57,0.4);
+            text-shadow: 0 0 5px rgba(0,230,57,0.8);
+        }
+        .cyber-button-secondary {
+            border: 1px solid #00dce6;
+            color: #00dce6;
+            box-shadow: 0 0 5px rgba(0,220,230,0.2);
+        }
+        .cyber-button-secondary:hover {
+            background: rgba(0,220,230,0.1);
+            box-shadow: 0 0 15px rgba(0,220,230,0.4);
+            text-shadow: 0 0 5px rgba(0,220,230,0.8);
+        }
+        .cyber-button-danger {
+            border: 1px solid #ffb4ab;
+            color: #ffb4ab;
+            box-shadow: 0 0 5px rgba(255,180,171,0.2);
+        }
+        .cyber-button-danger:hover {
+            background: rgba(255,180,171,0.1);
+            box-shadow: 0 0 15px rgba(255,180,171,0.4);
+            text-shadow: 0 0 5px rgba(255,180,171,0.8);
+        }
+
+        /* Input Prompt Style */
+        .cyber-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #00e639;
+            background: rgba(0,230,57,0.05);
+        }
+        .cyber-input-wrapper::before {
+            content: ">";
+            color: #00e639;
+            padding-left: 8px;
+            font-weight: bold;
+        }
+        .cyber-input {
+            background: transparent;
+            border: none;
+            color: #e4e1e9;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 8px;
+            width: 100%;
+        }
+        .cyber-input:focus {
+            outline: none;
+            box-shadow: inset 0 -2px 10px rgba(0,230,57,0.2);
+        }
+        /* Blinking Cursor Simulation */
+        .cyber-input:focus + .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #00ff41;
+            animation: blink 1s step-end infinite;
+            position: absolute;
+            /* Simple approx, not perfect without JS measuring input val */
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Neon Text Highlighting */
+        .neon-green { color: #00e639; text-shadow: 0 0 5px rgba(0,230,57,0.5); }
+        .neon-cyan { color: #00dce6; text-shadow: 0 0 5px rgba(0,220,230,0.5); }
+        .neon-magenta { color: #ffabf3; text-shadow: 0 0 5px rgba(255,171,243,0.5); }
+
+        /* Status Blinker */
+        .status-blinker {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #00e639;
+            box-shadow: 0 0 8px #00e639;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .status-blinker-cyan {
+            background-color: #00dce6;
+            box-shadow: 0 0 8px #00dce6;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface grid-bg min-h-screen flex flex-col antialiased selection:bg-primary-fixed-dim selection:text-surface">
+<!-- CRT Scanlines Overlay -->
+<div class="scanlines"></div>
+<!-- TopNavBar (Shared Component Blueprint) -->
+<header class="bg-surface border-b border-outline-variant bg-surface-container-lowest shadow-[0_0_10px_rgba(0,230,57,0.2)] flex justify-between items-center px-margin py-4 w-full z-50 sticky top-0">
+<div class="flex items-center gap-8">
+<div class="font-display text-headline-md text-primary-fixed-dim drop-shadow-[0_0_8px_rgba(0,230,57,0.8)]">
+                &gt; EvalLens
+            </div>
+<nav class="hidden md:flex gap-6 items-center">
+<!-- Inactive Nav Links -->
+<a class="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all" href="#">DASHBOARD</a>
+<a class="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all" href="#">EVALS</a>
+<a class="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all" href="#">LOGS</a>
+<!-- Semantic Anti-Hallucination: Map DATASETS intent here. It's not explicitly in TopNavBar's array from JSON, but SideNav has it. 
+                     Wait, TopNav JSON: ["DASHBOARD", "EVALS", "LOGS", "DOCS"]. None of these perfectly match DATASETS. 
+                     I will leave them inactive, as per instructions "suppress/hide if task focused" or just leave inactive if no match. 
+                     Wait, "DATASETS" might fall under DASHBOARD or EVALS conceptually, but let's leave TopNav strictly to its JSON.-->
+<a class="text-on-surface-variant font-label-caps hover:text-primary-fixed hover:drop-shadow-[0_0_5px_rgba(114,255,112,0.5)] transition-all" href="#">DOCS</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<!-- Search bar 'on_right' -->
+<div class="hidden md:block cyber-input-wrapper w-48">
+<input class="cyber-input font-code text-code" placeholder="SEARCH..." type="text"/>
+</div>
+<button class="font-label-caps text-label-caps cyber-button px-4 py-2 hover:opacity-80 active:scale-95 transition-transform">
+                [ RUN_EVAL ]
+            </button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden relative">
+<!-- SideNavBar (Shared Component Blueprint) -->
+<aside class="hidden md:flex flex-col h-full bg-surface-container-low border-r border-outline-variant w-64 py-margin flex-shrink-0 z-40 relative">
+<div class="px-margin mb-8 flex items-center gap-4">
+<div class="w-12 h-12 border border-primary-fixed-dim bg-surface flex items-center justify-center relative overflow-hidden">
+<img alt="SYSTEM_OPERATOR" class="w-full h-full object-cover opacity-80" data-alt="A futuristic, low-resolution pixel art avatar of a cyberpunk system operator wearing glowing AR goggles in a dark room. Deep blacks, bright neon green accents. Minimalist." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMPUgyGwEM0JCAKwbMZe0ebate0qV2yWnxHZFmbpnal-pYo8neWuNkRpk2HqwajcNyygTMOapcuyZCsFyMTea3C_RsZP58ym3J2--lxMCIWlV-X5Kw0g4Rz7E-wY7sTlEFGATMWGuo4nAOdTTjbYDWJfjOlM9VjfnTvoRTQtDxg6qECbv6Iij30aGb4QsyTpORtuHKxToNjpejBpqcwNWRL62_TLofUKcj7a1_xuaouzxJ1IGg9h7R"/>
+<div class="absolute inset-0 bg-primary-fixed-dim/10 mix-blend-overlay"></div>
+</div>
+<div>
+<div class="font-label-caps text-label-caps text-secondary-fixed neon-cyan mb-1">OPERATOR_01</div>
+<div class="font-code text-[10px] text-on-surface-variant flex items-center gap-1">
+<span class="status-blinker"></span> STATUS: ACTIVE
+                    </div>
+</div>
+</div>
+<nav class="flex flex-col flex-1 gap-1">
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:neon-cyan">terminal</span>
+<span class="font-label-caps text-label-caps">TERMINAL</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:neon-cyan">code</span>
+<span class="font-label-caps text-label-caps">PROMPT_IDE</span>
+</a>
+<!-- Active State Logic for DATASETS -->
+<a class="flex items-center gap-3 text-primary-fixed-dim border-l-4 border-primary-fixed-dim bg-primary-container/10 px-4 py-3 translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined text-[20px] neon-green" style="font-variation-settings: 'FILL' 1;">database</span>
+<span class="font-label-caps text-label-caps neon-green">DATASETS</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:neon-cyan">psychology</span>
+<span class="font-label-caps text-label-caps">MODELS</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-variant/20 hover:text-secondary-container transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:neon-cyan">settings</span>
+<span class="font-label-caps text-label-caps">SETTINGS</span>
+</a>
+</nav>
+<div class="mt-auto px-margin flex flex-col gap-4">
+<button class="cyber-button-secondary w-full py-2 font-label-caps text-label-caps">
+                    UPGRADE_PLAN
+                </button>
+<div class="flex justify-between border-t border-outline-variant pt-4">
+<a class="text-on-surface-variant hover:text-secondary-container transition-colors" href="#" title="SUPPORT">
+<span class="material-symbols-outlined">help</span>
+</a>
+<a class="text-on-surface-variant hover:text-secondary-container transition-colors" href="#" title="LOGOUT">
+<span class="material-symbols-outlined">logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col h-full overflow-hidden p-gutter md:p-margin relative">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 border-b border-outline-variant pb-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary-fixed-dim mb-2 neon-green">// DATASET_EXPLORER</h1>
+<div class="cyber-input-wrapper w-full md:w-96 mt-4">
+<input class="cyber-input font-code text-code" placeholder="FIND_DATASET..." type="text"/>
+</div>
+</div>
+<button class="cyber-button px-6 py-3 font-label-caps text-label-caps flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    [ +_ADD_SOURCE ]
+                </button>
+</div>
+<!-- Two-Column Grid -->
+<div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-gutter lg:gap-margin min-h-0">
+<!-- Left Column: List -->
+<div class="lg:col-span-4 xl:col-span-3 flex flex-col gap-4 overflow-y-auto pr-2 pb-8">
+<!-- Dataset Item Active -->
+<div class="cyber-panel p-4 cursor-pointer relative border-primary-fixed-dim bg-primary-container/5 shadow-[0_0_10px_rgba(0,230,57,0.1)]">
+<div class="absolute -top-[10px] left-4 bg-surface px-2 border border-primary-fixed-dim text-[10px] text-primary-fixed-dim font-code tracking-widest">
+                            SELECTED
+                        </div>
+<h3 class="font-headline-md text-[16px] text-primary-fixed-dim mb-2 truncate">customer_support_v2</h3>
+<div class="flex justify-between items-end">
+<div class="font-code text-code text-on-surface-variant">
+<p>ROWS: 1,240</p>
+<p class="opacity-50 mt-1">UPD: 2024-10-24 14:32</p>
+</div>
+<div class="font-label-caps text-[10px] text-primary-fixed-dim border border-primary-fixed-dim px-2 py-1 flex items-center gap-1 bg-primary-container/10">
+<span class="status-blinker w-2 h-2"></span> SYNCED
+                            </div>
+</div>
+</div>
+<!-- Dataset Item Inactive -->
+<div class="cyber-panel p-4 cursor-pointer relative opacity-80 hover:opacity-100">
+<h3 class="font-headline-md text-[16px] text-secondary-fixed mb-2 truncate group-hover:neon-cyan">medical_qa_gold</h3>
+<div class="flex justify-between items-end">
+<div class="font-code text-code text-on-surface-variant">
+<p>ROWS: 45,000</p>
+<p class="opacity-50 mt-1">UPD: 2024-09-12 09:11</p>
+</div>
+<div class="font-label-caps text-[10px] text-secondary-fixed border border-secondary-fixed px-2 py-1 flex items-center gap-1 bg-secondary-container/10">
+<span class="status-blinker status-blinker-cyan w-2 h-2"></span> LOCAL
+                            </div>
+</div>
+</div>
+<!-- Dataset Item Inactive -->
+<div class="cyber-panel p-4 cursor-pointer relative opacity-80 hover:opacity-100">
+<h3 class="font-headline-md text-[16px] text-secondary-fixed mb-2 truncate">ecommerce_intent_raw</h3>
+<div class="flex justify-between items-end">
+<div class="font-code text-code text-on-surface-variant">
+<p>ROWS: 8,902</p>
+<p class="opacity-50 mt-1">UPD: 2024-10-20 18:05</p>
+</div>
+<div class="font-label-caps text-[10px] text-tertiary-fixed-dim border border-tertiary-fixed-dim px-2 py-1 flex items-center gap-1 bg-tertiary-container/10">
+<span class="material-symbols-outlined text-[10px]">cloud_off</span> OFFLINE
+                            </div>
+</div>
+</div>
+</div>
+<!-- Right Column: Details -->
+<div class="lg:col-span-8 xl:col-span-9 flex flex-col cyber-panel relative overflow-hidden">
+<div class="absolute -top-[10px] right-4 bg-surface px-2 border border-outline-variant text-[10px] text-on-surface-variant font-code tracking-widest">
+                        SYS.MEM.ALLOC_OK
+                    </div>
+<!-- Details Header -->
+<div class="p-6 border-b border-outline-variant bg-surface-container-high/50 flex justify-between items-center">
+<h2 class="font-headline-md text-[20px] text-primary-fixed-dim neon-green m-0">
+                            // DATASET_DETAILS :: [customer_support_v2]
+                        </h2>
+<div class="flex gap-2">
+<button class="cyber-button-secondary px-3 py-1 text-[12px]"><span class="material-symbols-outlined text-[14px] align-middle">edit</span></button>
+<button class="cyber-button-secondary px-3 py-1 text-[12px]"><span class="material-symbols-outlined text-[14px] align-middle">sync</span></button>
+</div>
+</div>
+<!-- Stats Row -->
+<div class="p-6 border-b border-outline-variant grid grid-cols-2 md:grid-cols-4 gap-4 bg-surface-container-lowest/80">
+<div class="border border-outline-variant p-3">
+<div class="font-label-caps text-[10px] text-on-surface-variant mb-1">TOTAL_ROWS</div>
+<div class="font-display text-[24px] text-primary-fixed-dim">1,240</div>
+</div>
+<div class="border border-outline-variant p-3">
+<div class="font-label-caps text-[10px] text-on-surface-variant mb-1">TOKEN_COUNT</div>
+<div class="font-display text-[24px] text-secondary-fixed">~48.2K</div>
+</div>
+<div class="border border-outline-variant p-3">
+<div class="font-label-caps text-[10px] text-on-surface-variant mb-1">AVG_LENGTH</div>
+<div class="font-display text-[24px] text-tertiary-fixed-dim">142<span class="text-[12px]">chars</span></div>
+</div>
+<div class="border border-outline-variant p-3">
+<div class="font-label-caps text-[10px] text-on-surface-variant mb-1">UNIQUE_KEYS</div>
+<div class="font-display text-[24px] text-on-surface">04</div>
+</div>
+</div>
+<!-- Data Preview Table (Terminal Style) -->
+<div class="flex-1 p-6 overflow-auto bg-surface-container-lowest relative">
+<!-- Simulated Background Texture in Code Area -->
+<div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #fff 2px, #fff 4px);"></div>
+<table class="w-full text-left font-code text-[12px] border-collapse relative z-10">
+<thead>
+<tr class="text-on-surface-variant border-b border-outline-variant">
+<th class="py-2 px-4 font-normal w-16">ID</th>
+<th class="py-2 px-4 font-normal w-1/3">INPUT_PROMPT</th>
+<th class="py-2 px-4 font-normal w-1/3">EXPECTED_OUTPUT</th>
+<th class="py-2 px-4 font-normal">TAGS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/30 transition-colors group">
+<td class="py-3 px-4 text-on-surface-variant">001</td>
+<td class="py-3 px-4 text-secondary-fixed break-words pr-4">"How do I reset my router?"</td>
+<td class="py-3 px-4 text-primary-fixed-dim break-words pr-4">"1. Unplug power. 2. Wait 30s. 3. Replug."</td>
+<td class="py-3 px-4"><span class="border border-outline-variant px-1 text-[10px] text-tertiary-fixed-dim">hardware</span></td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/30 transition-colors group">
+<td class="py-3 px-4 text-on-surface-variant">002</td>
+<td class="py-3 px-4 text-secondary-fixed break-words pr-4">"Billing error on my invoice #992"</td>
+<td class="py-3 px-4 text-primary-fixed-dim break-words pr-4">"Transferring to billing agent immediately."</td>
+<td class="py-3 px-4"><span class="border border-outline-variant px-1 text-[10px] text-tertiary-fixed-dim">billing</span> <span class="border border-outline-variant px-1 text-[10px] text-tertiary-fixed-dim">urgent</span></td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/30 transition-colors group">
+<td class="py-3 px-4 text-on-surface-variant">003</td>
+<td class="py-3 px-4 text-secondary-fixed break-words pr-4">"What are your business hours?"</td>
+<td class="py-3 px-4 text-primary-fixed-dim break-words pr-4">"We are open 9AM - 5PM EST, Mon-Fri."</td>
+<td class="py-3 px-4"><span class="border border-outline-variant px-1 text-[10px] text-tertiary-fixed-dim">general</span></td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/30 transition-colors group">
+<td class="py-3 px-4 text-on-surface-variant">004</td>
+<td class="py-3 px-4 text-secondary-fixed break-words pr-4">"Can I cancel my subscription mid-month?"</td>
+<td class="py-3 px-4 text-primary-fixed-dim break-words pr-4">"Yes, refunds are prorated automatically."</td>
+<td class="py-3 px-4"><span class="border border-outline-variant px-1 text-[10px] text-tertiary-fixed-dim">account</span></td>
+</tr>
+</tbody>
+</table>
+<div class="mt-4 text-center text-on-surface-variant text-[10px] font-code">
+                            -- 1,236 MORE ROWS OMITTED -- <br/>
+<button class="underline hover:text-secondary-fixed mt-1">LOAD_MORE_PAGES</button>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-high/50 flex flex-wrap gap-4 justify-end">
+<button class="cyber-button-secondary px-4 py-2 font-label-caps text-[12px] flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">download</span>
+                            [ EXPORT_JSON ]
+                        </button>
+<button class="cyber-button px-4 py-2 font-label-caps text-[12px] flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                            [ RUN_VALIDATION ]
+                        </button>
+<button class="cyber-button-danger px-4 py-2 font-label-caps text-[12px] flex items-center gap-2 ml-auto md:ml-8">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+                            [ DELETE_SOURCE ]
+                        </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer (Shared Component Blueprint) -->
+<!-- Suppressed Footer to prioritize the canvas based on the shell visibility logic if it's a deep app view, but let's include it as docked bottom to anchor the UI. Actually, side nav implies an app shell. -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant fixed bottom-0 w-full flex justify-between items-center px-margin py-2 z-50 overflow-hidden after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(transparent_50%,black_50%)] after:bg-[length:100%_2px] after:pointer-events-none after:opacity-10">
+<div class="font-display text-label-caps text-primary">(C) 2024 EVAL_LENS // SYSTEM_STABLE</div>
+<div class="flex gap-4 font-code text-code text-on-surface-variant">
+<a class="hover:text-surface-tint" href="#">SYS_STATUS</a>
+<a class="hover:text-surface-tint" href="#">API_REF</a>
+<a class="hover:text-surface-tint" href="#">LEGAL</a>
+</div>
+</footer>
+</body></html>
