@@ -8,7 +8,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
 from app.config import get_settings
-from app.db import engine, get_session
+from app.db import get_engine, get_session
 from app.judge import SelfJudgingError
 from app.models import Dataset, DatasetItem, Run, Sample, Score
 from app.providers import available_providers
@@ -117,7 +117,7 @@ def _run_in_background(run_id: int) -> None:
     A fresh session is opened here on purpose: the request-scoped one is closed
     by the time this runs.
     """
-    with Session(engine) as session:
+    with Session(get_engine()) as session:
         asyncio.run(execute_run(session, run_id))
 
 
