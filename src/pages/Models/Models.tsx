@@ -2,7 +2,9 @@ import Footer from '../../components/ui/Footer'
 import ScanlineOverlay from '../../components/ui/ScanlineOverlay'
 import SideNavBar from '../../components/navigation/SideNavBar'
 import TopNavBar from '../../components/navigation/TopNavBar'
-import { modelEntries, providerSummary } from '../../data/models'
+import { EmptyPanel, ErrorPanel, LoadingPanel } from '../../components/ui/QueryState'
+import { buildModelEntries, buildProviderSummary } from '../../data/models'
+import { useCost, useProviders } from '../../hooks/useEvalLensQueries'
 import ModelCard from './components/ModelCard'
 
 /**
@@ -11,6 +13,16 @@ import ModelCard from './components/ModelCard'
  * each costs per million tokens.
  */
 export default function Models() {
+  const providersQuery = useProviders()
+  const costQuery = useCost()
+
+  const entries = buildModelEntries(providersQuery.data)
+  const summary = buildProviderSummary(
+    providersQuery.data,
+    entries,
+    costQuery.data?.total_spend_usd ?? 0,
+  )
+
   return (
     <div className="page-datasets bg-background text-on-surface grid-bg min-h-screen flex flex-col antialiased selection:bg-primary-fixed-dim selection:text-surface">
       <ScanlineOverlay />
@@ -36,9 +48,15 @@ export default function Models() {
               <span className="material-symbols-outlined text-[18px]">add</span>[ +_ADD_PROVIDER ]
             </button>
           </div>
+          {providersQuery.isLoading ? (
+            <LoadingPanel label="QUERYING_PROVIDERS" />
+          ) : providersQuery.isError ? (
+            <ErrorPanel error={providersQuery.error} onRetry={() => providersQuery.refetch()} />
+          ) : (
+            <>
           {/* Summary Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            {providerSummary.map((stat) => (
+            {summary.map((stat) => (
               <div
                 className="border border-outline-variant p-3 bg-surface-container-low"
                 key={stat.label}
@@ -51,11 +69,17 @@ export default function Models() {
             ))}
           </div>
           {/* Registry Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {modelEntries.map((model) => (
-              <ModelCard key={model.id} model={model} />
-            ))}
-          </div>
+          {entries.length === 0 ? (
+            <EmptyPanel message="No providers reported by the API." />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {entries.map((model) => (
+                <ModelCard key={model.id} model={model} />
+              ))}
+            </div>
+          )}
+            </>
+          )}
         </main>
       </div>
       <Footer variant="links" />
