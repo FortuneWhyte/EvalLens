@@ -104,3 +104,27 @@ def test_providers_reports_configuration_honestly(client):
     assert {"mock", "openai", "anthropic", "ollama"} <= names
     mock = next(entry for entry in body if entry["name"] == "mock")
     assert mock["configured"] is True
+
+
+def test_dataset_items_are_listed_with_tags_split(client):
+    """Tags are stored comma separated in SQLite; the API speaks in lists."""
+    from sqlmodel import Session, select
+
+    from app.db import get_engine
+    from app.models import DatasetItem
+
+    with Session(get_engine()) as session:
+        item = session.exec(select(DatasetItem)).first()
+        item.tags = "billing,urgent"
+        session.add(item)
+        session.commit()
+
+    body = client.get("/api/datasets/customer_support_v2/items").json()
+    assert len(body) == 3
+    assert body[0]["question"]
+    tagged = next(entry for entry in body if entry["tags"])
+    assert tagged["tags"] == ["billing", "urgent"]
+
+
+def test_items_for_an_unknown_dataset_is_404(client):
+    assert client.get("/api/datasets/nope/items").status_code == 404

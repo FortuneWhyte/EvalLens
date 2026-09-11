@@ -73,6 +73,16 @@ class DatasetOut(BaseModel):
     item_count: int
 
 
+class DatasetItemOut(BaseModel):
+    """One test question. `tags` is stored flat in SQLite and split on read."""
+
+    external_id: str
+    question: str
+    reference: Optional[str]
+    context: Optional[str]
+    tags: List[str]
+
+
 class ProviderOut(BaseModel):
     name: str
     configured: bool

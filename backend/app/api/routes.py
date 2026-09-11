@@ -16,6 +16,7 @@ from app.runner import SpendCapExceeded, create_run, execute_run
 from app.schemas import (
     CostSummaryOut,
     CreateRunIn,
+    DatasetItemOut,
     DatasetOut,
     ProviderOut,
     RunDetailOut,
@@ -166,6 +167,36 @@ def list_datasets(session: Session = Depends(get_session)) -> List[DatasetOut]:
             ),
         )
         for dataset in datasets
+    ]
+
+
+@router.get(
+    "/datasets/{name}/items", response_model=List[DatasetItemOut], tags=["datasets"]
+)
+def list_dataset_items(
+    name: str,
+    session: Session = Depends(get_session),
+    limit: int = Query(50, ge=1, le=500),
+) -> List[DatasetItemOut]:
+    """The questions in a dataset, so the explorer can preview what it will run."""
+    dataset = session.exec(select(Dataset).where(Dataset.name == name)).first()
+    if dataset is None:
+        raise HTTPException(status_code=404, detail=f"No dataset '{name}'")
+
+    items = session.exec(
+        select(DatasetItem).where(DatasetItem.dataset_id == dataset.id).limit(limit)
+    ).all()
+    return [
+        DatasetItemOut(
+            external_id=item.external_id,
+            question=item.question,
+            reference=item.reference,
+            context=item.context,
+            # Stored comma separated to keep the SQLite schema flat; split here
+            # so the API speaks in lists rather than leaking that detail.
+            tags=[tag for tag in (item.tags or "").split(",") if tag],
+        )
+        for item in items
     ]
 
 
