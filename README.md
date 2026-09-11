@@ -4,9 +4,9 @@
 candidate model, grade every answer with a second "judge" model, and record quality, latency, and dollar
 cost for each sample — so you can prove a prompt change made things better instead of hoping it did.
 
-> **Status: front end only.** Eight screens are built as a React + TypeScript app. There is no backend
-> yet, so every number on screen comes from seed data in `src/data/`, one module per screen — those are
-> the files that get swapped for API calls later. See [Roadmap](#roadmap).
+> **Status: working end to end.** Eight screens in a React + TypeScript app, reading live data from a
+> FastAPI backend that runs real evaluations. No API key is needed to try it: a built-in mock provider
+> answers without a network call, so a full run costs nothing. See [Roadmap](#roadmap).
 
 ---
 
@@ -76,6 +76,9 @@ had no design, so they extend the same system — shell, panel treatment, badge 
 | `/logs` | Logs | — | Filterable stream of runner, provider and judge lines with token counts and per-call cost |
 | `/models` | Models | — | Registry of providers and models: role, readiness, context window, per-million pricing |
 | `/settings` | Settings | — | API keys, monthly spend cap, judge configuration, run guardrails |
+
+Six of the eight read live data. Logs and the Prompt IDE still render their own seed content, because
+no endpoint exposes a log stream or prompt versions yet.
 | `/terminal` | Terminal | — | Working command console: `help`, `runs`, `run`, `models`, `cost`, `clear` |
 
 Unknown routes redirect to the Dashboard.
@@ -97,6 +100,9 @@ npm run dev      # Vite dev server on http://localhost:5173
 npm run build    # type-check and produce a production build in dist/
 npm run preview  # serve the production build
 ```
+
+Run both: the Vite dev server proxies `/api` to the backend on :8000, so the browser stays on one
+origin and the app tells you plainly if the API is not running.
 
 **Backend** — see [backend/README.md](backend/README.md) for detail.
 
@@ -150,8 +156,10 @@ zero — the architecture does not depend on any paid service.
 - [x] Judge with structured output, pinned versions, and rubric versioning
 - [x] Async run execution with concurrency limits and failure isolation
 - [x] Cost tracking: per-call pricing from token counts, rolled up per run
+- [x] React app wired to the API: Dashboard, Evals, Datasets, Models and Settings read live data
 - [ ] Alembic migration (tables are currently created from the models at startup)
-- [ ] React dashboard wired to the API instead of its own seed data
+- [ ] Endpoints behind the Logs and Prompt IDE screens
+- [ ] Writing tags back from the Tag Manager (currently read-only)
 - [ ] Golden-set judge validation and human-agreement reporting
 - [ ] RAG evaluation: retrieval storage and context precision/recall metrics
 
@@ -167,7 +175,10 @@ src/
 ├─ components/
 │  ├─ navigation/       TopNavBar, SideNavBar
 │  └─ ui/               Footer, ScanlineOverlay, PanelBrackets
-├─ data/                Seed content for each screen
+├─ lib/api.ts           The only module that speaks HTTP
+├─ types/api.ts         Response shapes, mirroring backend/app/schemas.py
+├─ hooks/               Query hooks, one per endpoint
+├─ data/                Presentation decisions and the screens without an API yet
 ├─ pages/
 │  ├─ Dashboard/        Dashboard.tsx + components/
 │  ├─ Datasets/         Datasets.tsx + components/
