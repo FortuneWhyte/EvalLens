@@ -66,6 +66,14 @@ export interface DatasetSummary {
   item_count: number
 }
 
+export interface DatasetItem {
+  external_id: string
+  question: string
+  reference: string | null
+  context: string | null
+  tags: string[]
+}
+
 export interface ProviderStatus {
   name: string
   configured: boolean

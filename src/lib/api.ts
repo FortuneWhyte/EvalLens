@@ -8,6 +8,7 @@
 import type {
   CostSummary,
   CreateRunRequest,
+  DatasetItem,
   DatasetSummary,
   ProviderStatus,
   RunDetail,
@@ -72,6 +73,8 @@ export const api = {
       body: JSON.stringify(payload),
     }),
   listDatasets: () => request<DatasetSummary[]>('/api/datasets'),
+  listDatasetItems: (name: string) =>
+    request<DatasetItem[]>(`/api/datasets/${encodeURIComponent(name)}/items`),
   listProviders: () => request<ProviderStatus[]>('/api/providers'),
   getCost: () => request<CostSummary>('/api/cost'),
 }

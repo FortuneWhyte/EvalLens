@@ -12,6 +12,7 @@ export const queryKeys = {
   runs: ['runs'] as const,
   run: (publicId: string) => ['runs', publicId] as const,
   datasets: ['datasets'] as const,
+  datasetItems: (name: string) => ['datasets', name, 'items'] as const,
   providers: ['providers'] as const,
   cost: ['cost'] as const,
 }
@@ -48,6 +49,14 @@ export function useRun(publicId: string | undefined) {
 
 export function useDatasets() {
   return useQuery({ queryKey: queryKeys.datasets, queryFn: api.listDatasets })
+}
+
+export function useDatasetItems(name: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.datasetItems(name ?? ''),
+    queryFn: () => api.listDatasetItems(name as string),
+    enabled: Boolean(name),
+  })
 }
 
 export function useProviders() {
