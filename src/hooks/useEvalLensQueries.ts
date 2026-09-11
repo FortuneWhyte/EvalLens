@@ -15,6 +15,7 @@ export const queryKeys = {
   datasetItems: (name: string) => ['datasets', name, 'items'] as const,
   providers: ['providers'] as const,
   cost: ['cost'] as const,
+  health: ['health'] as const,
 }
 
 /** True while a run is still being evaluated, so the UI knows to keep watching. */
@@ -65,6 +66,11 @@ export function useProviders() {
 
 export function useCost() {
   return useQuery({ queryKey: queryKeys.cost, queryFn: api.getCost })
+}
+
+/** The API's own view of how the process is configured. */
+export function useHealth() {
+  return useQuery({ queryKey: queryKeys.health, queryFn: api.getHealth })
 }
 
 export function useCreateRun() {

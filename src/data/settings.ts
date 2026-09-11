@@ -1,29 +1,11 @@
 /**
- * Seed content for the Settings screen. The spend cap is the concrete answer to
- * the funding question in the planning notes: cost is bounded by a limit the
- * operator sets, not by trust.
+ * Settings content that has no API behind it yet.
+ *
+ * API keys, spend and the judge model now come from the backend. What is left
+ * here is documentation: the hints explaining why each judge setting is set the
+ * way it is, and the guardrail list. Those are decisions to explain, not state
+ * to fetch.
  */
-
-export interface ApiKeyEntry {
-  provider: string
-  masked: string
-  status: 'ACTIVE' | 'MISSING'
-  added: string
-}
-
-export const apiKeys: ApiKeyEntry[] = [
-  { provider: 'OPENAI', masked: 'sk-proj-••••••••••••••••4f2a', status: 'ACTIVE', added: '2024-09-02' },
-  { provider: 'ANTHROPIC', masked: 'sk-ant-••••••••••••••••9c71', status: 'ACTIVE', added: '2024-09-14' },
-  { provider: 'GOOGLE', masked: 'not configured', status: 'MISSING', added: '--' },
-  { provider: 'OLLAMA', masked: 'http://localhost:11434', status: 'ACTIVE', added: '2024-10-01' },
-]
-
-export const spendLimit = {
-  cap: '50.00',
-  used: 18.4,
-  capValue: 50,
-  period: 'OCTOBER 2024',
-}
 
 export interface JudgeSetting {
   label: string

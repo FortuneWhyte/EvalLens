@@ -10,6 +10,7 @@ import type {
   CreateRunRequest,
   DatasetItem,
   DatasetSummary,
+  HealthStatus,
   ProviderStatus,
   RunDetail,
   RunSummary,
@@ -77,4 +78,5 @@ export const api = {
     request<DatasetItem[]>(`/api/datasets/${encodeURIComponent(name)}/items`),
   listProviders: () => request<ProviderStatus[]>('/api/providers'),
   getCost: () => request<CostSummary>('/api/cost'),
+  getHealth: () => request<HealthStatus>('/health'),
 }

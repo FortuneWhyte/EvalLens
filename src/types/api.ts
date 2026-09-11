@@ -86,6 +86,13 @@ export interface CostSummary {
   remaining_usd: number
 }
 
+export interface HealthStatus {
+  status: string
+  judge_model: string
+  rubric_version: string
+  max_concurrency: number
+}
+
 export interface CreateRunRequest {
   dataset: string
   candidate_model?: string

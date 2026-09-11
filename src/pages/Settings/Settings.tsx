@@ -3,17 +3,45 @@ import Footer from '../../components/ui/Footer'
 import ScanlineOverlay from '../../components/ui/ScanlineOverlay'
 import SideNavBar from '../../components/navigation/SideNavBar'
 import TopNavBar from '../../components/navigation/TopNavBar'
-import { apiKeys, judgeSettings, spendLimit, toggles } from '../../data/settings'
+import { ErrorPanel, LoadingPanel } from '../../components/ui/QueryState'
+import { judgeSettings, toggles } from '../../data/settings'
+import { useCost, useHealth, useProviders } from '../../hooks/useEvalLensQueries'
 import SettingsSection from './components/SettingsSection'
 
 export default function Settings() {
+  const costQuery = useCost()
+  const providersQuery = useProviders()
+  const healthQuery = useHealth()
+
   const [enabled, setEnabled] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(toggles.map((toggle) => [toggle.label, toggle.enabled])),
   )
-  const [cap, setCap] = useState(spendLimit.cap)
+  // The cap is editable locally so the effect on the usage bar is visible, but
+  // there is no endpoint to persist it, which the panel says outright.
+  const [cap, setCap] = useState<string | null>(null)
 
-  const capNumber = Number(cap) || 0
-  const usedPercent = capNumber > 0 ? Math.min(100, (spendLimit.used / capNumber) * 100) : 100
+  const serverCap = costQuery.data?.monthly_cap_usd ?? 0
+  const used = costQuery.data?.total_spend_usd ?? 0
+  const capNumber = cap === null ? serverCap : Number(cap) || 0
+  const usedPercent = capNumber > 0 ? Math.min(100, (used / capNumber) * 100) : 100
+
+  // Judge settings come from the API where the process actually knows them;
+  // the rest stay as documented defaults.
+  const liveJudgeSettings = judgeSettings.map((setting) => {
+    if (setting.label === 'DEFAULT_JUDGE' && healthQuery.data?.judge_model) {
+      return { ...setting, value: healthQuery.data.judge_model }
+    }
+    if (setting.label === 'RUBRIC_VERSION' && healthQuery.data?.rubric_version) {
+      return { ...setting, value: healthQuery.data.rubric_version }
+    }
+    return setting
+  })
+
+  const apiKeys = (providersQuery.data ?? []).map((provider) => ({
+    provider: provider.name.toUpperCase(),
+    masked: provider.configured ? 'configured' : 'not configured',
+    status: provider.configured ? ('ACTIVE' as const) : ('MISSING' as const),
+  }))
 
   return (
     <div className="page-datasets bg-background text-on-surface grid-bg min-h-screen flex flex-col antialiased selection:bg-primary-fixed-dim selection:text-surface">
@@ -33,6 +61,8 @@ export default function Settings() {
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-gutter lg:gap-margin">
             <SettingsSection title="// API_KEYS">
+              {providersQuery.isError && <ErrorPanel error={providersQuery.error} />}
+              {providersQuery.isLoading && <LoadingPanel label="CHECKING_PROVIDERS" />}
               {apiKeys.map((key) => (
                 <div
                   className="flex items-center justify-between gap-4 border border-outline-variant/50 p-3"
@@ -73,15 +103,17 @@ export default function Settings() {
                     className="cyber-input font-code text-code"
                     onChange={(event) => setCap(event.target.value)}
                     type="text"
-                    value={cap}
+                    value={cap ?? serverCap.toFixed(2)}
                   />
                 </div>
               </div>
               <div>
                 <div className="flex justify-between font-code text-[11px] mb-2">
-                  <span className="text-on-surface-variant">{spendLimit.period}</span>
+                  <span className="text-on-surface-variant">
+                    {costQuery.data ? `${costQuery.data.run_count} RUNS RECORDED` : 'LOADING'}
+                  </span>
                   <span className="text-tertiary-fixed-dim">
-                    ${spendLimit.used.toFixed(2)} / ${capNumber.toFixed(2)}
+                    ${used.toFixed(4)} / ${capNumber.toFixed(2)}
                   </span>
                 </div>
                 <div className="h-3 border border-outline-variant bg-surface-container-lowest relative overflow-hidden">
@@ -92,13 +124,14 @@ export default function Settings() {
                 </div>
                 <p className="font-code text-[11px] text-on-surface-variant mt-3 leading-relaxed">
                   Runs are refused once the cap is reached. Local models are exempt: they cost
-                  electricity, not tokens.
+                  electricity, not tokens. Set the live value with EVALLENS_MONTHLY_SPEND_CAP;
+                  editing here previews the effect but does not persist.
                 </p>
               </div>
             </SettingsSection>
 
             <SettingsSection title="// JUDGE_CONFIG">
-              {judgeSettings.map((setting) => (
+              {liveJudgeSettings.map((setting) => (
                 <div className="border border-outline-variant/50 p-3" key={setting.label}>
                   <div className="flex justify-between items-center gap-4 mb-1">
                     <span className="font-label-caps text-[10px] text-on-surface-variant">
