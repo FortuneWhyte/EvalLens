@@ -18,8 +18,10 @@ export function LoadingPanel({ label = 'LOADING' }: { label?: string }) {
 export function ErrorPanel({ error, onRetry }: { error: unknown; onRetry?: () => void }) {
   const status = error instanceof ApiError ? error.status : undefined
   const message = error instanceof Error ? error.message : 'Unknown error'
-  // status 0 is the client's marker for "the request never reached a server".
-  const offline = status === 0
+  // 0 is the client's marker for a request that never reached a server; 502-504
+  // are what a proxy returns when the API behind it is down. Both mean the same
+  // thing to the person reading this: start the backend.
+  const offline = status === 0 || status === 502 || status === 503 || status === 504
 
   return (
     <div className="border border-error bg-error-container/10 p-6 flex flex-col gap-3">
