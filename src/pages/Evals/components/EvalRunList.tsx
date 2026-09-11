@@ -1,6 +1,9 @@
-import { evalRuns, type EvalRunStatus, type EvalRunSummary } from '../../../data/evals'
+import type { RunStatus, RunSummary } from '../../../types/api'
 
-const statusBadges: Record<EvalRunStatus, { classes: string; indicator: 'blinker' | 'blinker-cyan' | 'none' }> = {
+const statusBadges: Record<
+  RunStatus,
+  { classes: string; indicator: 'blinker' | 'blinker-cyan' | 'none' }
+> = {
   DONE: {
     classes: 'text-primary-fixed-dim border-primary-fixed-dim bg-primary-container/10',
     indicator: 'blinker',
@@ -19,32 +22,54 @@ const statusBadges: Record<EvalRunStatus, { classes: string; indicator: 'blinker
   },
 }
 
-function EvalRunCard({ run }: { run: EvalRunSummary }) {
+/** Times arrive as UTC ISO strings; show them in the viewer's own zone. */
+function formatStarted(iso: string): string {
+  const date = new Date(iso.endsWith('Z') ? iso : `${iso}Z`)
+  if (Number.isNaN(date.getTime())) return '--'
+  return date.toLocaleString(undefined, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function EvalRunCard({
+  run,
+  selected,
+  onSelect,
+}: {
+  run: RunSummary
+  selected: boolean
+  onSelect: (publicId: string) => void
+}) {
   const badge = statusBadges[run.status]
 
   return (
-    <div
-      className={`cyber-panel p-4 cursor-pointer relative ${
-        run.selected
+    <button
+      className={`cyber-panel p-4 cursor-pointer relative text-left w-full ${
+        selected
           ? 'border-primary-fixed-dim bg-primary-container/5 shadow-[0_0_10px_rgba(0,230,57,0.1)]'
           : 'opacity-80 hover:opacity-100'
       }`}
+      onClick={() => onSelect(run.public_id)}
     >
-      {run.selected && (
+      {selected && (
         <div className="absolute -top-[10px] left-4 bg-surface px-2 border border-primary-fixed-dim text-[10px] text-primary-fixed-dim font-code tracking-widest">
           SELECTED
         </div>
       )}
-      <div className="flex justify-between items-start mb-2">
+      <div className="flex justify-between items-start mb-2 gap-2">
         <h3
           className={`font-headline-md text-[16px] truncate ${
-            run.selected ? 'text-primary-fixed-dim' : 'text-secondary-fixed'
+            selected ? 'text-primary-fixed-dim' : 'text-secondary-fixed'
           }`}
         >
-          {run.id}
+          {run.public_id}
         </h3>
         <div
-          className={`font-label-caps text-[10px] border px-2 py-1 flex items-center gap-1 ${badge.classes}`}
+          className={`font-label-caps text-[10px] border px-2 py-1 flex items-center gap-1 shrink-0 ${badge.classes}`}
         >
           {badge.indicator !== 'none' && (
             <span
@@ -58,21 +83,36 @@ function EvalRunCard({ run }: { run: EvalRunSummary }) {
       </div>
       <div className="font-code text-code text-on-surface-variant">
         <p className="truncate">{run.dataset}</p>
-        <p className="opacity-50 mt-1">{run.model}</p>
-        <div className="flex justify-between mt-2 opacity-50">
-          <span>{run.started}</span>
-          <span>{run.samples}</span>
+        <p className="opacity-50 mt-1 truncate">{run.candidate_model}</p>
+        <div className="flex justify-between mt-2 opacity-50 gap-2">
+          <span className="truncate">{formatStarted(run.created_at)}</span>
+          <span className="shrink-0">
+            {run.completed_samples}/{run.total_samples}
+          </span>
         </div>
       </div>
-    </div>
+    </button>
   )
 }
 
-export default function EvalRunList() {
+export default function EvalRunList({
+  runs,
+  selectedId,
+  onSelect,
+}: {
+  runs: RunSummary[]
+  selectedId: string | null
+  onSelect: (publicId: string) => void
+}) {
   return (
     <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-4 overflow-y-auto pr-2 pb-8">
-      {evalRuns.map((run) => (
-        <EvalRunCard key={run.id} run={run} />
+      {runs.map((run) => (
+        <EvalRunCard
+          key={run.public_id}
+          onSelect={onSelect}
+          run={run}
+          selected={run.public_id === selectedId}
+        />
       ))}
     </div>
   )
