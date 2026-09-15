@@ -5,7 +5,7 @@
  */
 export default function EditorPane({ onRunTest }: { onRunTest: () => void }) {
   return (
-    <section className="flex-1 bg-surface-container-lowest border border-primary-fixed-dim flex flex-col relative panel-brackets shadow-[0_0_15px_rgba(0,230,57,0.1)]">
+    <section className="flex-1 min-h-[320px] bg-surface-container-lowest border border-primary-fixed-dim flex flex-col relative panel-brackets shadow-[0_0_15px_rgba(0,230,57,0.1)]">
       <div className="flex justify-between items-center border-b border-primary-fixed-dim/30 bg-surface-container-low p-2">
         <div className="font-code text-code text-primary-fixed-dim flex items-center gap-2">
           <span className="material-symbols-outlined text-sm">description</span>

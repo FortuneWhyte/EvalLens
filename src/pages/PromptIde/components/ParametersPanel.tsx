@@ -3,7 +3,7 @@ import { models, parameterSliders } from '../../../data/promptIde'
 /** Right pane: sampling parameters and model selection. */
 export default function ParametersPanel() {
   return (
-    <section className="w-72 bg-surface-container-lowest border border-outline-variant flex flex-col panel-brackets relative">
+    <section className="w-full lg:w-72 shrink-0 bg-surface-container-lowest border border-outline-variant flex flex-col panel-brackets relative">
       <div className="absolute -top-3 right-2 bg-surface-container-lowest px-2 border border-outline-variant border-b-0 text-secondary-fixed-dim font-label-caps text-label-caps z-10 uppercase">
         PARAMETERS
       </div>

@@ -16,9 +16,10 @@ export default function PromptIde() {
       <div className="flex flex-1 overflow-hidden">
         <SideNavBar variant="ide" />
         {/* Main Content */}
-        <main className="flex-1 flex flex-col h-full bg-[#0a0a0f] p-gutter gap-gutter overflow-hidden">
-          {/* Three Pane Layout */}
-          <div className="flex-1 flex gap-gutter min-h-0">
+        <main className="flex-1 flex flex-col h-full bg-[#0a0a0f] p-gutter gap-gutter overflow-y-auto lg:overflow-hidden">
+          {/* Three panes side by side on desktop; stacked below lg, where 256px
+              plus 288px of fixed side panes cannot fit beside an editor. */}
+          <div className="flex-1 flex flex-col lg:flex-row gap-gutter min-h-0">
             <PromptVersions />
             <EditorPane onRunTest={runTest} />
             <ParametersPanel />

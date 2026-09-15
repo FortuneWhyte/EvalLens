@@ -27,7 +27,7 @@ const states: Record<
 /** Left pane: the PROMPT_VERSIONS history strip. */
 export default function PromptVersions() {
   return (
-    <section className="w-64 bg-surface-container-lowest border border-outline-variant flex flex-col panel-brackets relative">
+    <section className="w-full lg:w-64 shrink-0 bg-surface-container-lowest border border-outline-variant flex flex-col panel-brackets relative">
       <div className="absolute -top-3 left-2 bg-surface-container-lowest px-2 border border-outline-variant border-b-0 text-primary-fixed-dim font-label-caps text-label-caps z-10">
         PROMPT_VERSIONS
       </div>

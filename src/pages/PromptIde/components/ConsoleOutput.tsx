@@ -19,7 +19,7 @@ export default function ConsoleOutput({
   }, [lines])
 
   return (
-    <section className="h-48 bg-surface-container-lowest border border-outline-variant flex flex-col relative panel-brackets">
+    <section className="h-48 shrink-0 bg-surface-container-lowest border border-outline-variant flex flex-col relative panel-brackets">
       <div className="absolute -top-3 left-4 bg-surface-container-lowest px-2 border border-outline-variant border-b-0 text-on-surface-variant font-label-caps text-label-caps z-10 uppercase">
         CONSOLE_OUTPUT
       </div>
