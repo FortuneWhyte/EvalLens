@@ -1,20 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
-import { routes } from '../../routes'
+import { topNavItems } from './navItems'
 
 type TopNavVariant = 'dashboard' | 'explorer' | 'ide'
-
-interface TopNavItem {
-  label: string
-  /** absent for sections with no screen yet — those stay inert anchors */
-  to?: string
-}
-
-const topNavItems: TopNavItem[] = [
-  { label: 'DASHBOARD', to: routes.dashboard },
-  { label: 'EVALS', to: routes.evals },
-  { label: 'LOGS', to: routes.logs },
-  { label: 'DOCS' },
-]
 
 /**
  * Per-variant link styling. The mockups differ slightly: the Dashboard's links

@@ -1,30 +1,10 @@
 import { Link, useLocation } from 'react-router-dom'
-import { routes } from '../../routes'
+import { sideNavItems as navItems } from './navItems'
 
 type SideNavVariant = 'explorer' | 'ide'
 
 const OPERATOR_AVATAR =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAMPUgyGwEM0JCAKwbMZe0ebate0qV2yWnxHZFmbpnal-pYo8neWuNkRpk2HqwajcNyygTMOapcuyZCsFyMTea3C_RsZP58ym3J2--lxMCIWlV-X5Kw0g4Rz7E-wY7sTlEFGATMWGuo4nAOdTTjbYDWJfjOlM9VjfnTvoRTQtDxg6qECbv6Iij30aGb4QsyTpORtuHKxToNjpejBpqcwNWRL62_TLofUKcj7a1_xuaouzxJ1IGg9h7R'
-
-interface NavItem {
-  label: string
-  icon: string
-  /** absent for the sections that have no design yet — those stay inert anchors */
-  to?: string
-}
-
-/**
- * DASHBOARD is not in any mockup's sidebar; it is added so the Dashboard is
- * reachable from the other screens rather than only through the top bar.
- */
-const navItems: NavItem[] = [
-  { label: 'DASHBOARD', icon: 'dashboard', to: routes.dashboard },
-  { label: 'TERMINAL', icon: 'terminal', to: routes.terminal },
-  { label: 'PROMPT_IDE', icon: 'code', to: routes.promptIde },
-  { label: 'DATASETS', icon: 'database', to: routes.datasets },
-  { label: 'MODELS', icon: 'psychology', to: routes.models },
-  { label: 'SETTINGS', icon: 'settings', to: routes.settings },
-]
 
 /**
  * Shared app-shell sidebar. The Dataset Explorer and Prompt IDE mockups draw it
