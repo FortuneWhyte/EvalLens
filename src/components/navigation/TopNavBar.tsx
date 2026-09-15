@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import MobileNav from './MobileNav'
 import { topNavItems } from './navItems'
 
 type TopNavVariant = 'dashboard' | 'explorer' | 'ide'
@@ -81,9 +82,10 @@ function DashboardTopNav() {
           <span className="w-2 h-2 bg-primary-fixed-dim block pulse-cyan"></span>
           SYSTEM ONLINE
         </div>
-        <button className="border border-primary-fixed-dim text-primary-fixed-dim px-4 py-2 font-label-caps text-label-caps hover:bg-primary-fixed-dim/10 hover:drop-shadow-[0_0_8px_rgba(0,230,57,0.6)] transition-all uppercase">
+        <button className="hidden md:block border border-primary-fixed-dim text-primary-fixed-dim px-4 py-2 font-label-caps text-label-caps hover:bg-primary-fixed-dim/10 hover:drop-shadow-[0_0_8px_rgba(0,230,57,0.6)] transition-all uppercase">
           [ RUN_EVAL ]
         </button>
+        <MobileNav />
       </div>
     </header>
   )
@@ -105,9 +107,10 @@ function ExplorerTopNav() {
         <div className="hidden md:block cyber-input-wrapper w-48">
           <input className="cyber-input font-code text-code" placeholder="SEARCH..." type="text" />
         </div>
-        <button className="font-label-caps text-label-caps cyber-button px-4 py-2 hover:opacity-80 active:scale-95 transition-transform">
+        <button className="hidden md:block font-label-caps text-label-caps cyber-button px-4 py-2 hover:opacity-80 active:scale-95 transition-transform">
           [ RUN_EVAL ]
         </button>
+        <MobileNav />
       </div>
     </header>
   )
@@ -128,9 +131,10 @@ function IdeTopNav() {
         <TopNavLinks variant="ide" />
       </nav>
       <div className="flex items-center gap-4">
-        <button className="border border-primary-fixed-dim text-primary-fixed-dim px-4 py-1 hover:bg-primary-fixed-dim/10 hover:shadow-[0_0_8px_rgba(0,230,57,0.6)] font-label-caps text-label-caps uppercase transition-all">
+        <button className="hidden md:block border border-primary-fixed-dim text-primary-fixed-dim px-4 py-1 hover:bg-primary-fixed-dim/10 hover:shadow-[0_0_8px_rgba(0,230,57,0.6)] font-label-caps text-label-caps uppercase transition-all">
           [ RUN_EVAL ]
         </button>
+        <MobileNav />
       </div>
     </header>
   )
